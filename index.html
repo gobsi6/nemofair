@@ -1,0 +1,4608 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>네모네모 페어틀 · 캐릭터 시트</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
+<style>
+  /* 여기어때 잘난체 (Jalnan) — used as the main heading font below */
+  @font-face {
+    font-family: 'YeogiOttaeJalnan';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_four@1.2/JalnanOTF00.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+  }
+  /* 배달의민족 주아체 (Juache) — alternative, not applied by default */
+  @font-face {
+    font-family: 'Juache';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+  }
+  /* 티머니 둥근바람체 (TMoneyDungunbaram) — alternative, not applied by default */
+  @font-face {
+    font-family: 'TMoneyDungunbaram';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/TmoneyRoundWindRegular.woff') format('woff');
+    font-weight: normal;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'TMoneyDungunbaram';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/TmoneyRoundWindExtraBold.woff') format('woff');
+    font-weight: 800;
+    font-display: swap;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+  :root{
+    --ink:#1C1F26;
+    --ink-text:#3A3D44;
+    --ink-soft:#565C68;
+    --paper:#F7F6F2;
+    --panel:#FFFFFF;
+    --line:#E4E1D8;
+    --accent:#5C89A0;
+    --accent-soft:#E4EEF2;
+    --amber:#E2A73E;
+    --slot:#F4F4F4;
+    --slot-dark:#6E7074;
+    --frame-grid-color: rgba(166,166,166,.15);
+    --frame-grid-size: 28px;
+    --pair-header-color: #A6A6A6;
+    --pair-header-text: #FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:#EBF6FC;
+    background-attachment:fixed;
+    color:var(--ink-text);
+    font-family:'Pretendard', sans-serif;
+    min-height:100vh;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    row-gap:12px;
+    padding:16px 32px;
+    border-bottom:1px solid var(--line);
+    background:rgba(255,255,255,.9);
+    backdrop-filter:blur(8px);
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    flex-wrap:wrap;
+    row-gap:6px;
+  }
+  .brand .mark{
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-weight:700;
+    font-size:21px;
+    letter-spacing:-0.01em;
+    white-space:nowrap;
+  }
+  .brand .mark span{ color:var(--accent); }
+  .version-badge{
+    align-self:center;
+    font-family:'Pretendard', sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.01em;
+    color:var(--accent);
+    background:var(--accent-soft);
+    padding:3px 10px;
+    border-radius:999px;
+    line-height:1.4;
+    white-space:nowrap;
+  }
+  .brand .sub{
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+  .actions{ display:flex; flex-wrap:wrap; gap:10px; row-gap:8px; align-items:center; justify-content:flex-end; }
+  button.primary{
+    font-family:'Pretendard', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    padding:11px 22px;
+    border-radius:10px;
+    cursor:pointer;
+    white-space:nowrap;
+    box-shadow:0 2px 8px rgba(28,31,38,.18);
+    transition:transform .12s ease, background .12s ease, box-shadow .12s ease;
+  }
+  button.primary:hover{ background:var(--accent); box-shadow:0 4px 12px rgba(92,137,160,.28); }
+  button.primary:active{ transform:scale(0.97); }
+  button.ghost{
+    font-family:'Pretendard', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    padding:10px 16px;
+    border-radius:10px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:border-color .12s ease, color .12s ease;
+  }
+  button.ghost:hover{ border-color:var(--accent); color:var(--accent); }
+  button.ghost.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+
+  .color-settings{ position:relative; }
+  .color-panel{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(28,31,38,.14);
+    padding:16px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    width:270px;
+    max-height:70vh;
+    overflow-y:auto;
+    z-index:60;
+  }
+  .color-panel[hidden]{ display:none; }
+  body.exporting .color-panel{ display:none !important; }
+  .color-panel-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Pretendard', sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    text-align:left;
+  }
+  .color-panel-row .color-panel-swatch{ order:0; cursor:pointer; }
+  .color-panel-row span:nth-child(2){
+    order:1;
+    flex:1 1 auto;
+    text-align:left;
+  }
+  .color-panel-swatch{
+    width:34px; height:20px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:#A6A6A6;
+    flex:0 0 auto;
+  }
+  .slot-color-swatch{ background:#F4F4F4; }
+  .color-panel-row input[type=color]{
+    width:0; height:0;
+    opacity:0;
+    position:absolute;
+    pointer-events:none;
+  }
+  .color-panel-divider{
+    height:1px;
+    background:var(--line);
+    margin:2px 0;
+    flex:0 0 auto;
+  }
+
+  /* ---------- Image size settings panel ---------- */
+  .size-settings{ position:relative; }
+  .size-panel{
+    position:absolute;
+    top:calc(100% + 8px);
+    right:0;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:12px;
+    box-shadow:0 10px 30px rgba(28,31,38,.14);
+    padding:16px 18px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    width:240px;
+    z-index:60;
+  }
+  .size-panel label{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .size-panel input[type=range]{
+    width:100%;
+  }
+  .size-panel .size-val{
+    font-size:12px;
+    font-weight:500;
+    color:var(--ink-text);
+    align-self:flex-end;
+  }
+  .size-reset-btn{
+    align-self:stretch;
+    justify-content:center;
+    font-size:12.5px;
+    padding:8px 12px;
+  }
+  .size-panel[hidden]{
+    display:none;
+  }
+  body.exporting .size-panel{ display:none !important; }
+  body.exporting #stage{ border-radius:0; border:none; box-shadow:none; background:transparent; }
+  body.exporting .card-top-tile,
+  body.exporting .card-bottom-tile,
+  body.exporting .middle-group{
+    box-shadow:none;
+  }
+
+  /* ---------- Stage wrapper ---------- */
+  .stage-wrap{
+    padding:48px 20px 84px;
+    display:flex;
+    justify-content:center;
+    overflow-x:auto;
+  }
+  #stage{
+    width:calc(860px + 2 * var(--tall-w, 288px));
+    flex-shrink:0;
+    background-color:#FFFFFF;
+    background-image:
+      linear-gradient(to right, var(--frame-grid-color) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--frame-grid-color) 1px, transparent 1px);
+    background-size: var(--frame-grid-size) var(--frame-grid-size);
+    padding:28px;
+    border-radius:14px;
+    border:1px solid var(--line);
+    box-shadow:0 1px 2px rgba(28,31,38,.04), 0 20px 48px rgba(28,31,38,.09);
+    position:relative;
+    /* Establish an isolated stacking context: stickers and bubbles inside carry
+       high z-index values, but confining them here keeps the whole stage below
+       the sticky topbar (z-index:50) so nothing paints over the header buttons. */
+    isolation:isolate;
+  }
+
+  /* ---------- Pair header (페어명 / 해시태그 banner) ---------- */
+  .nl-pair-header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    background:var(--pair-header-color);
+    color:var(--pair-header-text);
+    padding:16px 28px;
+    margin:-28px -28px 24px -28px;
+    border-radius:13px 13px 0 0;
+    transition:background .12s ease, color .12s ease;
+    position:relative;
+    z-index:0;
+    overflow:hidden;
+    cursor:pointer;
+  }
+  .nl-pair-header .pair-header-bg{
+    position:absolute;
+    top:-14px; left:-14px; right:-14px; bottom:-14px;
+    z-index:-1;
+    background-size:cover;
+    background-position:center;
+    filter:blur(6px);
+    pointer-events:none;
+  }
+  .nl-pair-header .editable{ cursor:text; }
+  .nl-pair-header .clear-btn{
+    position:absolute; top:8px; right:8px;
+    width:24px; height:24px;
+    line-height:1;
+    border-radius:50%;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+    font-size:14px;
+    display:none;
+    align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:5;
+  }
+  .nl-pair-header.has-bg-image .clear-btn{ display:flex; }
+  .nl-pair-header.has-bg-image{
+    color:#FFFFFF;
+  }
+  .nl-pair-header.has-bg-image .nl-pair-name,
+  .nl-pair-header.has-bg-image .nl-pair-hashtag{
+    text-shadow:0 1px 4px rgba(0,0,0,.6);
+  }
+  .pair-name-wrap{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    min-width:0;
+  }
+  .pair-name-star{
+    flex:0 0 auto;
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-size:22px;
+    line-height:1.2;
+    color:inherit;
+    opacity:.85;
+    user-select:none;
+    -webkit-user-select:none;
+    cursor:default;
+  }
+  .nl-pair-name{
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-size:26px;
+    line-height:1.2;
+  }
+  .nl-pair-header .nl-pair-hashtag{
+    font-family:'Pretendard', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    color:inherit;
+    white-space:nowrap;
+    background:rgba(255,255,255,.2);
+    padding:5px 13px;
+    border-radius:14px;
+    margin:0;
+  }
+  body.exporting .nl-pair-header{ border-radius:0; }
+  .ruler-overlay{
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    pointer-events:none;
+    z-index:900;
+    display:none;
+  }
+  #stage.show-ruler .ruler-overlay{ display:block; }
+  .ruler-h, .ruler-v{
+    position:absolute;
+    background:rgba(255,255,255,.88);
+    overflow:hidden;
+    pointer-events:auto;
+  }
+  .ruler-h{ cursor:ns-resize; }
+  .ruler-v{ cursor:ew-resize; }
+  .ruler-guides{ position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; }
+  .ruler-h{ top:0; left:0; right:0; height:22px; }
+  .ruler-v{ top:0; left:0; bottom:0; width:22px; }
+  .ruler-tick{
+    position:absolute;
+    background:#9AA0A8;
+  }
+  .ruler-h .ruler-tick{ bottom:0; width:1px; height:7px; }
+  .ruler-h .ruler-tick.major{ height:12px; background:#5B6068; }
+  .ruler-v .ruler-tick{ right:0; height:1px; width:7px; }
+  .ruler-v .ruler-tick.major{ width:12px; background:#5B6068; }
+  .ruler-label{
+    position:absolute;
+    font-family:'Pretendard', sans-serif;
+    font-size:9px;
+    font-weight:600;
+    color:#5B6068;
+    line-height:1;
+    white-space:nowrap;
+  }
+  .ruler-h .ruler-label{ top:2px; transform:translateX(2px); }
+  .ruler-v .ruler-label{
+    left:2px;
+    transform-origin:left top;
+    transform:rotate(-90deg);
+  }
+  .ruler-guide{
+    position:absolute;
+    pointer-events:auto;
+  }
+  .ruler-guide .guide-line{
+    position:absolute;
+  }
+  .ruler-guide.h{ left:22px; right:0; height:9px; top:0; margin-top:-4px; cursor:ns-resize; }
+  .ruler-guide.h .guide-line{
+    left:0; right:0; top:4px; height:1px;
+    background:repeating-linear-gradient(to right, var(--accent) 0 4px, transparent 4px 8px);
+  }
+  .ruler-guide.v{ top:22px; bottom:0; width:9px; left:0; margin-left:-4px; cursor:ew-resize; }
+  .ruler-guide.v .guide-line{
+    top:0; bottom:0; left:4px; width:1px;
+    background:repeating-linear-gradient(to bottom, var(--accent) 0 4px, transparent 4px 8px);
+  }
+  .ruler-guide.h:hover .guide-line{
+    background-image:repeating-linear-gradient(to right, #FF5C5C 0 4px, transparent 4px 8px);
+  }
+  .ruler-guide.v:hover .guide-line{
+    background-image:repeating-linear-gradient(to bottom, #FF5C5C 0 4px, transparent 4px 8px);
+  }
+  body.exporting .ruler-overlay{ display:none !important; }
+
+  .row{
+    display:flex;
+    align-items:stretch;
+    gap:16px;
+  }
+
+  /* ---------- Card column (A / B) ---------- */
+  .card-col{
+    width:348px;
+    flex:0 0 348px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .card-top-tile{
+    background:#fff;
+    border-radius:14px;
+    padding:10px 24px 24px;
+    box-shadow:0 1px 2px rgba(28,31,38,.05);
+    display:flex;
+    flex-direction:column;
+    flex:1 1 auto;
+  }
+  .card-bottom-tile{
+    background:#fff;
+    border-radius:14px;
+    padding:24px;
+    box-shadow:0 1px 2px rgba(28,31,38,.05);
+    flex:0 0 auto;
+  }
+  .name-block{
+    display:flex;
+    flex-direction:row;
+    align-items:flex-end;
+    gap:12px;
+    height:60px;
+    margin-bottom:16px;
+  }
+  .name-text{
+    display:flex;
+    flex-direction:column;
+    gap:0px;
+  }
+  .char-tag{
+    font-family:'Pretendard', sans-serif;
+    font-weight:600;
+    font-size:13px;
+    color:var(--ink-text);
+    line-height:1.2;
+  }
+  .col-label{
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-weight:700;
+    font-size:28px;
+    color:#fff;
+    background:var(--accent);
+    width:50px; height:50px;
+    border-radius:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    letter-spacing:-0.02em;
+    flex:0 0 auto;
+    transition:background .15s ease;
+  }
+  .char-name{
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-weight:600;
+    font-size:21px;
+    color:var(--ink);
+    line-height:1.25;
+  }
+
+  /* ---------- Middle group (title + two tall images) ---------- */
+  .middle-group{
+    width:calc(2 * var(--tall-w, 288px) + 76px);
+    flex:0 0 calc(2 * var(--tall-w, 288px) + 76px);
+    display:flex;
+    flex-direction:column;
+    background:#fff;
+    border-radius:14px;
+    padding:10px 24px 24px;
+    box-shadow:0 1px 2px rgba(28,31,38,.05);
+  }
+  .middle-title-group{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    gap:4px;
+    height:60px;
+    margin-bottom:16px;
+  }
+  .middle-title{
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-weight:700;
+    font-size:28px;
+    text-align:center;
+    color:var(--ink-text);
+    letter-spacing:-0.01em;
+    line-height:1.1;
+  }
+  .middle-subtitle{
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-weight:700;
+    font-size:15px;
+    text-align:center;
+    color:#B3B3B3;
+    letter-spacing:-0.01em;
+    line-height:1.1;
+  }
+  .middle-row{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    flex:1 1 auto;
+  }
+  .middle-images{
+    position:relative;
+    display:flex;
+    gap:28px;
+    flex:1 1 auto;
+    align-items:stretch;
+  }
+  .middle-texts{
+    display:flex;
+    gap:28px;
+    flex:0 0 auto;
+  }
+  .merge-toggle-btn{
+    position:absolute;
+    top:8px; right:8px;
+    z-index:5;
+    height:24px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+    font-family:'Pretendard', sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    padding:0 12px;
+    border:none;
+    border-radius:999px;
+    cursor:pointer;
+    transition:background .12s ease, right .12s ease;
+  }
+  .merge-toggle-btn.shifted{ right:38px; }
+  .merge-toggle-btn:hover{ background:rgba(0,0,0,.72); }
+  body.exporting .merge-toggle-btn{ display:none !important; }
+
+  /* ---------- Image slots ---------- */
+  .img-slot{
+    position:relative;
+    background:var(--slot);
+    border-radius:10px;
+    overflow:hidden;
+    cursor:pointer;
+    flex:0 0 auto;
+  }
+  .img-slot.tall{
+    width:var(--tall-w, 288px);
+    flex:0 0 var(--tall-w, 288px);
+    background:var(--slot);
+    border:1.5px dashed #C2BFB4;
+  }
+  .img-slot.tall.tall-merged{
+    width:calc(2 * var(--tall-w, 288px) + 28px);
+    flex:0 0 calc(2 * var(--tall-w, 288px) + 28px);
+  }
+  .img-slot.mini{
+    width:var(--mini-size, 200px); height:var(--mini-size, 200px);
+    flex:0 0 var(--mini-size, 200px);
+    background:var(--slot);
+    border:1.5px dashed #C2BFB4;
+    border-radius:12px;
+  }
+  .img-slot.square{
+    width:300px; height:var(--square-h, 300px);
+    border:1.5px dashed #C2BFB4;
+  }
+  .img-slot .placeholder{
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:9px;
+    color:var(--ink-soft);
+    text-align:center;
+    font-weight:600;
+    font-size:18px;
+    line-height:1.5;
+    pointer-events:none;
+  }
+  .img-slot .placeholder .plus{
+    width:38px; height:38px;
+    border:2px dashed var(--ink-soft);
+    border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+    margin-bottom:2px;
+  }
+  .img-slot.mini .placeholder .plus{ width:42px; height:42px; font-size:22px; margin-bottom:0; }
+  .nl-cell .placeholder,
+  .img-slot.mini .placeholder{
+    font-size:13px;
+    gap:6px;
+  }
+  .img-slot .hover-bar{
+    position:absolute; bottom:0; left:0; right:0;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+    font-size:12px;
+    font-weight:500;
+    padding:8px 0;
+    text-align:center;
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+  .img-slot:hover .hover-bar{ opacity:1; }
+  .img-slot .clear-btn{
+    position:absolute; top:8px; right:8px;
+    width:24px; height:24px;
+    line-height:1;
+    padding-bottom:2px;
+    box-sizing:border-box;
+    border-radius:50%;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+    font-size:14px;
+    display:none;
+    align-items:center; justify-content:center;
+    cursor:pointer;
+    z-index:5;
+  }
+  .img-slot.has-img .clear-btn{ display:flex; }
+
+  /* ---------- Slot caption (bottom-right credit/description text) ---------- */
+  .img-slot .slot-caption{
+    position:absolute;
+    right:8px; bottom:8px;
+    left:auto;
+    z-index:4;
+    max-width:calc(100% - 16px);
+    margin:0;
+    padding:4px 9px;
+    background:rgba(0,0,0,.55);
+    border:none;
+    border-radius:8px;
+    color:#fff;
+    font-family:'Pretendard', sans-serif;
+    font-size:11px;
+    font-weight:500;
+    line-height:15px;
+    text-align:right;
+    white-space:pre-wrap;
+    word-break:break-word;
+    cursor:text;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease, background .12s ease, bottom .12s ease;
+  }
+  .img-slot .slot-caption:hover{ background:rgba(0,0,0,.55); }
+  .img-slot:hover .slot-caption,
+  .img-slot .slot-caption:focus{
+    bottom:36px;
+  }
+  .img-slot.mini .slot-caption,
+  .nl-cell .slot-caption{
+    right:5px; bottom:5px;
+    max-width:calc(100% - 10px);
+    padding:2px 6px;
+    border-radius:6px;
+    font-size:9px;
+    line-height:12px;
+  }
+  .img-slot.mini:hover .slot-caption,
+  .img-slot.mini .slot-caption:focus,
+  .nl-cell:hover .slot-caption,
+  .nl-cell .slot-caption:focus{
+    bottom:32px;
+  }
+  .img-slot .slot-caption:focus{ background:rgba(0,0,0,.68); box-shadow:none; }
+  .img-slot:hover .slot-caption,
+  .img-slot .slot-caption:focus,
+  .img-slot .slot-caption.has-text{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .img-slot .slot-caption:empty::before{
+    content:attr(data-placeholder);
+    opacity:.75;
+  }
+  body.exporting .img-slot .slot-caption:not(.has-text){ display:none; }
+
+  /* ---------- Swatch row ---------- */
+  .swatch-row{
+    display:flex;
+    gap:11px;
+    margin-top:22px;
+  }
+  .swatch{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+  }
+  .swatch-box{
+    width:36px; height:36px;
+    border-radius:8px;
+    border:2.5px solid #8A8A8A;
+    cursor:pointer;
+    position:relative;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.5);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .swatch-box:hover{ box-shadow:0 3px 8px rgba(28,31,38,.14); }
+  .swatch-box input[type=color]{
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    width:100%; height:100%;
+    opacity:0;
+    cursor:pointer;
+    border:none;
+    padding:0;
+  }
+  /* Dual-color swatches (머리/눈 only): solid mode uses just swatch-color-1 like
+     any other swatch; gradient/two-tone modes split the box into two clickable
+     zones, one input per zone, so each color can be picked independently. */
+  .swatch-box.dual-color .swatch-color-2{ display:none; }
+  .swatch-box.dual-color[data-mode="gradient"] .swatch-color-1,
+  .swatch-box.dual-color[data-mode="twotone-lr"] .swatch-color-1{
+    left:0; right:auto; width:50%; top:0; bottom:auto; height:100%;
+  }
+  .swatch-box.dual-color[data-mode="gradient"] .swatch-color-2,
+  .swatch-box.dual-color[data-mode="twotone-lr"] .swatch-color-2{
+    display:block;
+    left:50%; right:0; width:50%; top:0; bottom:auto; height:100%;
+  }
+  .swatch-box.dual-color[data-mode="twotone-tb"] .swatch-color-1{
+    top:0; bottom:auto; height:50%; left:0; right:0; width:100%;
+  }
+  .swatch-box.dual-color[data-mode="twotone-tb"] .swatch-color-2{
+    display:block;
+    top:50%; bottom:0; height:50%; left:0; right:0; width:100%;
+  }
+  .swatch-mode-btn{
+    position:absolute;
+    bottom:-7px; right:-7px;
+    width:17px; height:17px;
+    border-radius:50%;
+    background:#fff;
+    border:1px solid var(--line);
+    font-size:10px;
+    line-height:1;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--ink-soft);
+    z-index:5;
+  }
+  .swatch-mode-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  body.exporting .swatch-mode-btn{ display:none !important; }
+
+  /* Eye-only shape overlay: an optional SVG icon (square/circle/capsule/ring/heart)
+     layered on top of the swatch's own base color, instead of replacing it.
+     swatch-color-1 stays the base fill (click anywhere outside the icon);
+     swatch-color-2 becomes the shape icon's own fill (click directly on the
+     icon). Off by default ("도형 없음") — the chip looks and behaves exactly
+     like a normal dual-color swatch until a shape is picked. */
+  .swatch-box.has-shape .swatch-mode-btn{ display:none; }
+  .swatch-box.has-shape .swatch-color-1{
+    display:block; left:0; right:0; top:0; bottom:0; width:100%; height:100%;
+  }
+  .swatch-box.has-shape .swatch-color-2{
+    display:block;
+    top:9px; left:9px; right:9px; bottom:9px;
+    width:calc(100% - 18px);
+    height:calc(100% - 18px);
+    z-index:2;
+  }
+  .swatch-shape-svg{
+    position:absolute;
+    top:9px; left:9px; right:9px; bottom:9px;
+    width:calc(100% - 18px);
+    height:calc(100% - 18px);
+    fill:currentColor;
+    pointer-events:none;
+    display:none;
+  }
+  .swatch-box.has-shape .swatch-shape-svg{ display:block; }
+  body.exporting .swatch-shape-svg{ display:none !important; }
+  .swatch-shape-btn{
+    position:absolute;
+    top:-7px; right:-7px;
+    width:17px; height:17px;
+    border-radius:50%;
+    background:#fff;
+    border:1px solid var(--line);
+    font-size:9px;
+    line-height:1;
+    padding:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:var(--ink-soft);
+    z-index:5;
+  }
+  .swatch-shape-btn:hover{ color:var(--accent); border-color:var(--accent); }
+  body.exporting .swatch-shape-btn{ display:none !important; }
+  .swatch-shape-popover{
+    position:absolute;
+    bottom:calc(100% + 8px);
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:4px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:6px;
+    box-shadow:0 10px 26px rgba(28,31,38,.16);
+    /* Only matters while actually open (popover[hidden] removes it from
+       rendering entirely), so it's safe to always keep this above stickers. */
+    z-index:100000;
+  }
+  .swatch-shape-popover[hidden]{ display:none; }
+  body.exporting .swatch-shape-popover{ display:none !important; }
+  .shape-opt{
+    width:26px; height:26px;
+    border-radius:6px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink-soft);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    line-height:1;
+    padding:0;
+    cursor:pointer;
+  }
+  .shape-opt svg{ width:16px; height:16px; fill:currentColor; }
+  .shape-opt:hover{ border-color:var(--accent); color:var(--accent); }
+  .shape-opt.active{ border-color:var(--accent); background:rgba(92,137,160,.1); color:var(--accent); }
+  .swatch-label{
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+
+  /* ---------- Text block ---------- */
+  .text-block{
+    margin-top:20px;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .editable{
+    outline:none;
+    border-radius:5px;
+    padding:2px 4px;
+    margin:-2px -4px;
+    cursor:text;
+    transition:background-color .12s ease;
+  }
+  .editable:hover{ background:rgba(92,137,160,.06); }
+  .editable:focus{ background:rgba(92,137,160,.09); box-shadow:0 0 0 1.5px var(--accent); }
+  /* These three keep their own resting background on hover/focus — only the accent
+     border/outline shows, instead of swapping in the generic blue tint (which
+     looked like the background disappearing on these bordered/pill shapes). */
+  .nl-keywords:hover{ background:#E0E0E0; }
+  .nl-foot-caption:hover{ background:#F2F2F2; }
+  .nl-pair-hashtag:hover{ background:rgba(255,255,255,.32); }
+  .nl-keywords:focus{ background:#EBEBEB; box-shadow:0 0 0 1.5px var(--accent); }
+  .nl-foot-caption:focus{ background:#fff; box-shadow:0 0 0 1.5px var(--accent); }
+  .nl-pair-hashtag:focus{ background:rgba(255,255,255,.2); box-shadow:0 0 0 1.5px var(--accent); }
+  .main-text{
+    font-family:'Pretendard', sans-serif;
+    font-weight:700;
+    font-size:18px;
+    color:var(--ink-soft);
+    line-height:1.3;
+    letter-spacing:-0.01em;
+  }
+  .sub-text{
+    font-size:15px;
+    font-weight:400;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .sub-text-row{
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .sub-text-row .sub-text,
+  .sub-text-row .mid-sub-text{
+    flex:1 1 auto;
+  }
+  .check-box{
+    width:12px; height:12px;
+    flex:0 0 auto;
+    border:1.5px solid var(--ink-soft);
+    border-radius:3px;
+    background:transparent;
+  }
+  .point-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .point-item{
+    position:relative;
+    padding-right:18px;
+  }
+  .point-delete{
+    position:absolute;
+    right:0; top:50%;
+    transform:translateY(-50%);
+    width:16px; height:16px;
+    border-radius:50%;
+    background:rgba(0,0,0,.12);
+    color:var(--ink-soft);
+    font-size:11px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    opacity:0;
+    transition:opacity .12s ease, background .12s ease;
+  }
+  .point-item:hover .point-delete{
+    opacity:1;
+  }
+  .point-delete:hover{
+    background:rgba(0,0,0,.22);
+  }
+  .add-point-btn{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    align-self:flex-start;
+    border:1.5px dashed #C2BFB4;
+    border-radius:5px;
+    background:transparent;
+    color:var(--ink-soft);
+    font-family:'Pretendard', sans-serif;
+    font-size:11px;
+    font-weight:600;
+    padding:3px 7px;
+    cursor:pointer;
+    transition:border-color .12s ease, color .12s ease;
+  }
+  .add-point-btn:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+  }
+  body.exporting .point-delete,
+  body.exporting .add-point-btn{
+    display:none !important;
+  }
+
+  /* ---------- Middle tall images (each with its own sub-text box) ---------- */
+  .mid-text-block{
+    flex:1 1 0;
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    padding:15px 17px;
+    background:#F0F0F0;
+    border-radius:10px;
+  }
+  .mid-sub-text{
+    font-size:14.5px;
+    font-weight:400;
+    color:var(--ink-soft);
+    line-height:1.55;
+  }
+
+  /* ---------- Bottom badge row (small image slot + label) ---------- */
+  .bottom-row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .badge-caption{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .badge-label{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    align-self:flex-start;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    background:var(--accent);
+    padding:7px 13px;
+    border-radius:8px;
+    letter-spacing:-0.01em;
+    transition:background .15s ease, color .15s ease;
+  }
+  .badge-value{
+    font-size:15px;
+    font-weight:500;
+    color:var(--ink-text);
+    margin-left:6px;
+    padding-left:0;
+  }
+  .badge-label.editable{
+    margin:0;
+  }
+
+  /* ---------- Crop editor ---------- */
+  .crop-btn{
+    position:absolute;
+    top:8px; left:8px;
+    height:27px;
+    padding:0 12px;
+    border-radius:999px;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+    font-family:'Pretendard', sans-serif;
+    font-size:12px;
+    font-weight:600;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:6;
+  }
+  .img-slot.has-img:hover .crop-btn{ display:flex; }
+  body.exporting .crop-btn{ display:none !important; }
+
+  .crop-overlay{
+    position:fixed;
+    top:0; left:0; right:0; bottom:0;
+    background:rgba(20,22,26,.72);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    z-index:1000;
+  }
+  .crop-overlay[hidden]{ display:none; }
+  .crop-stage{
+    position:relative;
+    overflow:hidden;
+    background:#2A2D33;
+    border-radius:8px;
+    box-shadow:0 20px 60px rgba(0,0,0,.4);
+    touch-action:none;
+    cursor:move;
+    user-select:none;
+  }
+  .crop-stage img{
+    position:absolute;
+    top:0; left:0;
+    transform-origin:0 0;
+    pointer-events:none;
+    -webkit-user-drag:none;
+    max-width:none;
+  }
+  .crop-frame{
+    position:absolute;
+    top:0; left:0; right:0; bottom:0;
+    pointer-events:none;
+    border:1.5px solid rgba(255,255,255,.85);
+    border-radius:8px;
+  }
+  .crop-controls{
+    display:flex;
+    align-items:center;
+    gap:16px;
+    background:#fff;
+    padding:14px 20px;
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
+  }
+  .crop-controls .zoom-wrap{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-family:'Pretendard', sans-serif;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink-soft);
+  }
+  .crop-controls input[type=range]{ width:180px; }
+  .crop-zoom-val{
+    min-width:38px;
+    text-align:right;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink-text);
+  }
+  .crop-controls .crop-btn-row{ display:flex; gap:10px; }
+  .crop-apply-btn{
+    font-family:'Pretendard', sans-serif;
+    font-weight:600;
+    font-size:14px;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .crop-apply-btn:hover{ background:var(--accent); }
+  .crop-cancel-btn{
+    font-family:'Pretendard', sans-serif;
+    font-weight:500;
+    font-size:14px;
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+  }
+  .crop-reset-btn{
+    font-family:'Pretendard', sans-serif;
+    font-weight:500;
+    font-size:14px;
+    background:transparent;
+    color:var(--ink-soft);
+    border:1px solid var(--line);
+    padding:10px 18px;
+    border-radius:10px;
+    cursor:pointer;
+    margin-right:auto;
+  }
+  .crop-reset-btn:hover{ border-color:var(--accent); color:var(--accent); }
+
+  /* ---------- Stickers (free-floating images) ---------- */
+  .sticker{
+    position:absolute;
+    cursor:move;
+    touch-action:none;
+    outline:1.5px dashed transparent;
+    outline-offset:2px;
+    user-select:none;
+    transition:outline-color .12s ease;
+  }
+  .sticker:hover{
+    outline-color:rgba(92,137,160,.5);
+  }
+  .sticker img{
+    width:100%; height:100%;
+    display:block;
+    pointer-events:none;
+    -webkit-user-drag:none;
+  }
+  .sticker-delete{
+    position:absolute;
+    top:-11px; right:-11px;
+    width:22px; height:22px;
+    line-height:1;
+    padding-bottom:2px;
+    box-sizing:border-box;
+    border-radius:50%;
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:2;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease;
+  }
+  .sticker-resize{
+    position:absolute;
+    bottom:-7px; right:-7px;
+    width:16px; height:16px;
+    border-radius:50%;
+    background:var(--accent);
+    border:2px solid #fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+    cursor:se-resize;
+    z-index:2;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease;
+  }
+  .sticker-border-toggle{
+    position:absolute;
+    top:-12px; left:-12px;
+    width:25px; height:25px;
+    line-height:1;
+    border-radius:50%;
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:2;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease, background .12s ease;
+  }
+  .sticker.has-border .sticker-border-toggle{ background:var(--accent); }
+  .sticker.has-border img{
+    filter:url(#stickerBorderFilter);
+  }
+  .sticker-lock-btn{
+    position:absolute;
+    top:17px; left:-12px;
+    width:25px; height:25px;
+    border-radius:50%;
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:3;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease, background .12s ease;
+  }
+  .sticker-back-btn{
+    position:absolute;
+    top:46px; left:-12px;
+    width:25px; height:25px;
+    border-radius:50%;
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    z-index:3;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease, background .12s ease;
+  }
+  .sticker:hover .sticker-delete,
+  .sticker:hover .sticker-resize,
+  .sticker:hover .sticker-border-toggle,
+  .sticker:hover .sticker-lock-btn,
+  .sticker:hover .sticker-back-btn,
+  .sticker.sticker-active .sticker-delete,
+  .sticker.sticker-active .sticker-resize,
+  .sticker.sticker-active .sticker-border-toggle,
+  .sticker.sticker-active .sticker-lock-btn,
+  .sticker.sticker-active .sticker-back-btn{
+    opacity:1;
+    pointer-events:auto;
+  }
+  /* Locked: the sticker itself stops accepting clicks/drags (so anything it
+     covers — buttons, other stickers — becomes reachable again), except the
+     lock button stays clickable (and always visible, since hover can't fire on
+     a pointer-events:none element) so it can be unlocked again. */
+  .sticker.locked{
+    pointer-events:none;
+  }
+  .sticker.locked .sticker-lock-btn{
+    opacity:1;
+    pointer-events:auto;
+    background:var(--accent);
+  }
+  .sticker.locked .sticker-delete,
+  .sticker.locked .sticker-resize,
+  .sticker.locked .sticker-border-toggle,
+  .sticker.locked .sticker-back-btn{
+    display:none;
+  }
+  body.exporting .sticker{ outline:none; }
+  body.exporting .sticker-delete,
+  body.exporting .sticker-resize,
+  body.exporting .sticker-border-toggle,
+  body.exporting .sticker-lock-btn,
+  body.exporting .sticker-back-btn{ display:none !important; }
+
+  /* ---------- Speech bubbles (free-floating text) ---------- */
+  .bubble{
+    position:absolute;
+    cursor:move;
+    touch-action:none;
+    user-select:none;
+    transform-origin:top left;
+    padding-top:34px;
+    z-index:50;
+  }
+  .bubble-body{
+    position:relative;
+    min-width:70px;
+    max-width:260px;
+    padding:12px 16px;
+    border-radius:16px;
+    /* drop-shadow (not box-shadow) so the shadow follows the painted silhouette
+       of the body AND its overflowing tail child as one unified shape, giving the
+       tail a matching shadow with no seam at the junction. */
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,.22));
+    outline:1.5px dashed transparent;
+    outline-offset:2px;
+    transition:outline-color .12s ease;
+  }
+  .bubble:hover .bubble-body{
+    outline-color:rgba(92,137,160,.5);
+  }
+  .bubble-text{
+    outline:none;
+    cursor:text;
+    font-family:'Pretendard', sans-serif;
+    font-size:14px;
+    font-weight:600;
+    line-height:20px;
+    text-align:center;
+    white-space:pre-wrap;
+    word-break:break-word;
+  }
+  .bubble-tail{
+    position:absolute;
+    width:0; height:0;
+    border-left:9px solid transparent;
+    border-right:9px solid transparent;
+  }
+  /* Tail base overlaps ~4px into the body so the same-colour fills merge with no
+     visible seam; the apex sticks out ~8px. */
+  .bubble.side-bottom .bubble-tail{ bottom:-8px; border-top:12px solid; }
+  .bubble.side-top .bubble-tail{ top:-8px; border-bottom:12px solid; }
+  .bubble.tail-left .bubble-tail{ left:22px; }
+  .bubble.tail-right .bubble-tail{ right:22px; }
+  .bubble-controls{
+    position:absolute;
+    top:0; left:0; right:0;
+    height:34px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease;
+    transform-origin:50% 0%;
+  }
+  .bubble:hover .bubble-controls,
+  .bubble.bubble-active .bubble-controls,
+  .bubble.controls-open .bubble-controls{
+    opacity:1;
+    pointer-events:auto;
+  }
+  .bubble-color-btn{
+    width:20px; height:20px;
+    flex:0 0 20px;
+    border-radius:50%;
+    border:2px solid #fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+    cursor:pointer;
+    padding:0;
+  }
+  .bubble-color-btn.active{ outline:2px solid var(--ink); outline-offset:1px; }
+  .bubble-flip-btn,
+  .bubble-delete-btn,
+  .bubble-lock-btn{
+    width:22px; height:22px;
+    flex:0 0 22px;
+    border-radius:50%;
+    background:rgba(0,0,0,.62);
+    color:#fff;
+    font-size:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    border:none;
+    padding:0;
+  }
+  .bubble-delete-btn{
+    line-height:1;
+    padding-bottom:1px;
+    box-sizing:border-box;
+  }
+  /* Locked: the bubble itself stops accepting clicks/drags (so anything it
+     covers becomes reachable again). Its controls row is normally only shown
+     on hover, but hover can never fire once pointer-events:none applies — so
+     while locked, force the row visible (but non-interactive) and re-enable
+     only the lock button within it, hiding the other controls since dragging/
+     editing is disabled anyway. */
+  .bubble.locked{ pointer-events:none; }
+  .bubble.locked .bubble-controls{
+    opacity:1;
+    pointer-events:none;
+  }
+  .bubble.locked .bubble-lock-btn{
+    pointer-events:auto;
+    background:var(--accent);
+  }
+  .bubble.locked .bubble-color-btn,
+  .bubble.locked .bubble-flip-btn,
+  .bubble.locked .bubble-delete-btn{
+    display:none;
+  }
+  .bubble-resize{
+    position:absolute;
+    bottom:-8px; right:-8px;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:var(--accent);
+    border:2px solid #fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+    cursor:se-resize;
+    z-index:2;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease;
+    transform-origin:50% 50%;
+  }
+  .bubble:hover .bubble-resize,
+  .bubble.bubble-active .bubble-resize,
+  .bubble.controls-open .bubble-resize{
+    opacity:1;
+    pointer-events:auto;
+  }
+  /* Hidden (not display:none) during export so html2canvas skips painting it —
+     bubbles are drawn manually onto the export canvas instead, avoiding the same
+     text-vertical-position quirk that affected the slot captions — while keeping
+     getBoundingClientRect() measurable for that manual draw pass. */
+  body.exporting .bubble{ visibility:hidden; }
+
+  /* ---------- exporting state: hide chrome ---------- */
+  body.exporting .placeholder .hint-only{ }
+  body.exporting .hover-bar{ display:none !important; }
+  body.exporting .clear-btn{ display:none !important; }
+  body.exporting .editable:hover,
+  body.exporting .editable:focus{ background:transparent; box-shadow:none; }
+  body.exporting .swatch-box{ box-shadow:none; }
+  body.exporting .img-slot.square,
+  body.exporting .img-slot.tall,
+  body.exporting .img-slot.mini{
+    border-color:transparent !important;
+  }
+
+  input[type=file]{ display:none; }
+
+  /* ---------- footer note ---------- */
+  .footnote{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:-46px;
+    padding-bottom:40px;
+  }
+
+  @media (max-width: 860px){
+    .stage-wrap{ padding:24px 12px 60px; }
+    .topbar{ padding:14px 16px; gap:10px; }
+  }
+
+  /* ===================================================================
+     New pair-sheet layout (A block | shared middle | mirrored B block).
+     A CSS grid with a header row and a body row: everything in the body row
+     (both main images and the middle grid) top-aligns automatically, no
+     matter how tall the headers are. Only structural containers live here;
+     image slots, editables, swatches, captions, bubbles reuse shared CSS.
+     =================================================================== */
+  :root{ --square-h:500px; --tall-w:200px; --mini-size:210px; }
+  #stage{ width:fit-content; }
+
+  .nl-root{
+    display:grid;
+    grid-template-columns:var(--square-h, 560px) auto var(--square-h, 560px);
+    grid-template-areas:
+      "ha .   hb"
+      "ba mid bb"
+      ".  foot .";
+    column-gap:24px;
+    row-gap:14px;
+    align-items:start;
+  }
+  .nl-head-a{ grid-area:ha; }
+  .nl-head-b{ grid-area:hb; }
+  .nl-body-a{ grid-area:ba; }
+  .nl-body-b{ grid-area:bb; }
+  .nl-middle{ grid-area:mid; }
+  .nl-foot-caption{
+    grid-area:foot;
+    justify-self:center;
+    min-width:90px;
+    margin:0;
+    padding:5px 10px;
+    border:1.5px solid #C4C4C4;
+    border-radius:8px;
+    background:#fff;
+    font-size:11px;
+    color:var(--ink-soft);
+    text-align:center;
+    cursor:text;
+  }
+  .nl-foot-caption:empty::before{
+    content:attr(data-placeholder);
+    opacity:.55;
+  }
+  body.exporting .nl-foot-caption:not(.has-text){ display:none; }
+
+  .nl-body{ display:flex; flex-direction:column; gap:16px; }
+
+  .nl-head{ display:flex; align-items:center; gap:14px; }
+  .nl-head-b{ flex-direction:row-reverse; }
+  .nl-badge{
+    font-family:'YeogiOttaeJalnan', sans-serif;
+    font-size:30px; color:#fff;
+    background:var(--ink);
+    border-radius:4px;
+    padding:0 16px;
+    height:48px;
+    display:inline-flex; align-items:center; justify-content:center;
+    line-height:1; white-space:nowrap; flex:0 0 auto;
+    position:relative; cursor:pointer;
+  }
+  .nl-badge-text{ pointer-events:none; }
+  .nl-badge-color{
+    position:absolute; top:0; left:0; right:0; bottom:0;
+    width:100%; height:100%;
+    opacity:0; cursor:pointer;
+    border:none; padding:0;
+  }
+  body.exporting .nl-badge-color{ display:none !important; }
+  .nl-head-text{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .nl-head-b .nl-head-text{ align-items:flex-end; text-align:right; }
+  .nl-name-row{ display:flex; align-items:baseline; gap:8px; min-width:0; }
+  .nl-head-b .nl-name-row{ flex-direction:row-reverse; }
+  .nl-name-en{
+    font-family:'Pretendard', sans-serif;
+    font-size:13px;
+    font-weight:500;
+    color:var(--ink-soft);
+    white-space:nowrap;
+  }
+  .nl-name{
+    font-family:'Pretendard', sans-serif;
+    font-size:20px; font-weight:700; color:var(--ink); line-height:1.25;
+  }
+  .nl-stat{ font-size:15px; font-weight:500; color:var(--ink-soft); line-height:1.35; }
+
+  /* Square main image: width = column width = --square-h, height matches. */
+  .nl-main{
+    width:100%;
+    height:var(--square-h, 560px);
+    border:1.5px dashed #C2BFB4;
+    background-color:var(--slot);
+    background-image:linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.18) 100%);
+  }
+
+  .nl-lower{ display:flex; gap:26px; align-items:stretch; }
+  .nl-body-b .nl-lower{ flex-direction:row-reverse; }
+
+  .nl-side{
+    flex:0 0 var(--mini-size, 200px);
+    width:var(--mini-size, 200px);
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .nl-body-b .nl-side{ align-items:flex-end; }
+  .nl-colors{ display:flex; gap:var(--swatch-gap, 18px); margin-top:0; }
+  .nl-colors .swatch-box{ width:var(--swatch-size, 58px); height:var(--swatch-size, 58px); }
+  .nl-colors .swatch-label{ font-size:13px; }
+  .nl-animal{ align-self:stretch; }
+  .nl-animal-label{
+    font-size:14px; font-weight:700; color:#fff;
+    background:var(--ink);
+    display:flex; gap:5px; align-items:baseline; justify-content:center;
+    width:100%; box-sizing:border-box;
+    padding:7px 10px; border-radius:10px;
+  }
+
+  .nl-info{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:20px; padding-top:2px; }
+  .nl-body-b .nl-info{ text-align:right; }
+  .nl-keywords{
+    background:#EBEBEB; color:var(--ink-text);
+    font-weight:600; font-size:14px;
+    padding:7px 15px; border-radius:16px;
+    box-sizing:border-box;
+    width:100%; flex:0 0 auto;
+    text-align:center;
+  }
+  .nl-section{
+    display:flex; flex-direction:column; gap:7px;
+    justify-content:center;
+    flex:1 1 auto;
+    background:#FFFFFF;
+    border:1.5px solid #C7C4B9;
+    border-radius:13px;
+    padding:12px 16px;
+  }
+  .nl-sec-title{
+    font-size:14px; font-weight:700; color:#fff;
+    background:var(--ink);
+    align-self:center;
+    padding:4px 14px;
+    border-radius:8px;
+    letter-spacing:.02em;
+  }
+  .nl-sec-desc{ font-size:14px; color:var(--ink-text); line-height:1.55; text-align:center; }
+
+  /* Middle (no header, so it sits in the body row and top-aligns with images) */
+  .nl-middle{ display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .nl-grid{ display:grid; grid-template-columns:repeat(2, var(--tall-w, 215px)); gap:14px; }
+  .nl-cell{ width:var(--tall-w, 215px); height:var(--tall-w, 215px); border:1.5px dashed #C2BFB4; }
+  .nl-theme{ display:flex; flex-direction:column; align-items:center; gap:9px; }
+  .nl-theme-row{ display:flex; gap:10px; margin-top:0; }
+  .nl-theme-row .swatch-box{ width:40px; height:40px; }
+  .nl-theme-label{ font-size:13px; font-weight:600; color:var(--ink-soft); letter-spacing:.02em; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden">
+  <defs>
+    <filter id="stickerBorderFilter" x="-30%" y="-30%" width="160%" height="160%">
+      <feMorphology in="SourceAlpha" operator="dilate" radius="1" result="dilated"/>
+      <feFlood flood-color="#ffffff" flood-opacity="1" result="white"/>
+      <feComposite in="white" in2="dilated" operator="in" result="outline"/>
+      <feMerge>
+        <feMergeNode in="outline"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="mark">네모네모 페어틀</div>
+    <span class="version-badge">ver1.2</span>
+  </div>
+  <div class="actions">
+    <button class="ghost" id="saveBtn">저장</button>
+    <button class="ghost" id="loadBtn">불러오기</button>
+    <input type="file" id="loadInput" accept="application/json,.json" style="display:none;">
+    <button class="ghost" id="addStickerBtn">스티커 추가</button>
+    <input type="file" id="stickerInput" accept="image/*" style="display:none;">
+    <button class="ghost" id="addBubbleBtn">말풍선 추가</button>
+    <button class="ghost" id="rulerToggleBtn">정렬자</button>
+    <div class="size-settings">
+      <button class="ghost" id="sizeSettingsBtn">이미지 크기</button>
+      <div class="size-panel" id="sizePanel" hidden>
+        <label>
+          <span>메인 이미지 크기</span>
+          <input type="range" id="squareHeightRange" min="360" max="720" value="500">
+          <span class="size-val" id="squareHeightVal">500px</span>
+        </label>
+        <label>
+          <span>가운데 이미지 크기</span>
+          <input type="range" id="tallWidthRange" min="150" max="300" value="200">
+          <span class="size-val" id="tallWidthVal">200px</span>
+        </label>
+        <label>
+          <span>동물화 이미지 크기</span>
+          <input type="range" id="miniSizeRange" min="160" max="260" value="210">
+          <span class="size-val" id="miniSizeVal">210px</span>
+        </label>
+        <button class="ghost size-reset-btn" id="sizeResetBtn">크기 초기화</button>
+      </div>
+    </div>
+    <div class="color-settings">
+      <button class="ghost" id="colorSettingsBtn">색상 조정</button>
+      <div class="color-panel" id="colorPanel" hidden>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch" id="frameColorSwatch">
+            <input type="color" id="frameColorInput" value="#A6A6A6">
+          </label>
+          <span>배경 격자 색상</span>
+        </div>
+        <div class="color-panel-divider"></div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="A-main">
+            <input type="color" class="slot-color-input" data-slot="A-main" value="#F4F4F4">
+          </label>
+          <span>캐릭터A 메인 이미지</span>
+        </div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="B-main">
+            <input type="color" class="slot-color-input" data-slot="B-main" value="#F4F4F4">
+          </label>
+          <span>캐릭터B 메인 이미지</span>
+        </div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="mid-1">
+            <input type="color" class="slot-color-input" data-slot="mid-1" value="#F4F4F4">
+          </label>
+          <span>가운데 좌상</span>
+        </div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="mid-2">
+            <input type="color" class="slot-color-input" data-slot="mid-2" value="#F4F4F4">
+          </label>
+          <span>가운데 우상</span>
+        </div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="mid-3">
+            <input type="color" class="slot-color-input" data-slot="mid-3" value="#F4F4F4">
+          </label>
+          <span>가운데 좌하</span>
+        </div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="mid-4">
+            <input type="color" class="slot-color-input" data-slot="mid-4" value="#F4F4F4">
+          </label>
+          <span>가운데 우하</span>
+        </div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="A-animal">
+            <input type="color" class="slot-color-input" data-slot="A-animal" value="#F4F4F4">
+          </label>
+          <span>캐릭터A 동물화 이미지</span>
+        </div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch slot-color-swatch" data-slot="B-animal">
+            <input type="color" class="slot-color-input" data-slot="B-animal" value="#F4F4F4">
+          </label>
+          <span>캐릭터B 동물화 이미지</span>
+        </div>
+        <div class="color-panel-divider"></div>
+        <div class="color-panel-row">
+          <label class="color-panel-swatch" id="bulkColorSwatch">
+            <input type="color" id="bulkColorInput" value="#F4F4F4">
+          </label>
+          <span>일괄 적용 색상</span>
+        </div>
+        <button class="ghost size-reset-btn" id="bulkApplyBtn">모든 이미지칸에 적용</button>
+        <button class="ghost size-reset-btn" id="colorResetBtn">색상 초기화</button>
+      </div>
+    </div>
+    <button class="ghost" id="resetBtn">전체 초기화</button>
+    <button class="primary" id="downloadBtn">PNG로 다운로드</button>
+  </div>
+</div>
+
+<div class="stage-wrap">
+  <div id="stage">
+    <div class="nl-pair-header" id="pairHeader">
+      <div class="pair-header-bg" id="pairHeaderBg"></div>
+      <img id="pairHeaderImgEl" alt="" style="display:none;">
+      <div class="pair-name-wrap">
+        <span class="pair-name-star" contenteditable="false" aria-hidden="true">✦</span>
+        <div class="editable nl-pair-name" contenteditable="true" data-default="페어명">페어명</div>
+      </div>
+      <div class="editable nl-pair-hashtag" contenteditable="true" data-default="#해시태그">#해시태그</div>
+      <div class="clear-btn" id="pairHeaderImageClearBtn" title="타이틀 배경 이미지 제거">×</div>
+      <input type="file" id="pairHeaderImageInput" accept="image/*">
+    </div>
+    <div class="ruler-overlay" id="rulerOverlay">
+      <div class="ruler-h" id="rulerH"></div>
+      <div class="ruler-v" id="rulerV"></div>
+      <div class="ruler-guides" id="rulerGuides"></div>
+    </div>
+    <div class="nl-root">
+
+      <!-- ===== A: header ===== -->
+      <div class="nl-head nl-head-a">
+          <div class="nl-badge" style="background:#1C1F26;">
+            <span class="nl-badge-text">캐릭터A</span>
+            <input type="color" class="nl-badge-color" data-default="#1C1F26" value="#1C1F26" title="클릭하여 색상 변경">
+          </div>
+          <div class="nl-head-text">
+            <div class="nl-name-row">
+              <div class="editable nl-name char-name" contenteditable="true" data-default="이름">이름</div>
+              <div class="editable nl-name-en" contenteditable="true" data-default="English Name">English Name</div>
+            </div>
+            <div class="editable nl-stat" contenteditable="true" data-default="성별 / 나이 / 신장 cm / 체중 kg">성별 / 나이 / 신장 cm / 체중 kg</div>
+          </div>
+      </div>
+
+      <!-- ===== A: body ===== -->
+      <div class="nl-body nl-body-a">
+        <div class="img-slot nl-main" data-slot="A-main">
+          <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+          <div class="hover-bar">클릭하여 이미지 변경</div>
+          <div class="clear-btn" title="이미지 제거">×</div>
+          <input type="file" accept="image/*">
+          <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+        </div>
+
+        <div class="nl-lower">
+          <div class="nl-side">
+            <div class="swatch-row nl-colors">
+              <div class="swatch">
+                <div class="swatch-box dual-color" data-default="#d9d9d9" data-default-shape="#8A8A8A" data-mode="solid" style="background:#d9d9d9;">
+                  <input type="color" class="swatch-color-1" value="#d9d9d9">
+                  <input type="color" class="swatch-color-2" value="#8A8A8A">
+                  <button type="button" class="swatch-mode-btn" title="단색 / 그라데이션 / 투톤 전환">◐</button>
+                </div>
+                <div class="swatch-label">머리</div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-box dual-color shape-enabled" data-default="#d9d9d9" data-default-shape="#4D4D4D" data-mode="solid" data-shape="none" style="background:#d9d9d9;">
+                  <input type="color" class="swatch-color-1" value="#d9d9d9">
+                  <input type="color" class="swatch-color-2" value="#4D4D4D">
+                  <button type="button" class="swatch-mode-btn" title="단색 / 그라데이션 / 투톤 전환">◐</button>
+                </div>
+                <div class="swatch-label">눈</div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-box" data-default="#d9d9d9" style="background:#d9d9d9;"><input type="color" value="#d9d9d9"></div>
+                <div class="swatch-label">피부</div>
+              </div>
+            </div>
+            <div class="img-slot mini nl-animal" data-slot="A-animal">
+              <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+              <div class="hover-bar">이미지 변경</div>
+              <div class="clear-btn" title="이미지 제거">×</div>
+              <input type="file" accept="image/*">
+              <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+            </div>
+            <div class="nl-animal-label"><span>동물화:</span><span class="editable" contenteditable="true" data-default="강아지">강아지</span></div>
+          </div>
+
+          <div class="nl-info">
+            <div class="editable nl-keywords" contenteditable="true" data-default="#키워드1 #키워드2 #키워드3">#키워드1 #키워드2 #키워드3</div>
+            <div class="nl-section">
+              <div class="nl-sec-title">특징</div>
+              <div class="editable nl-sec-desc" contenteditable="true" data-default="특징 설명<br>특징 설명<br>특징 설명">특징 설명<br>특징 설명<br>특징 설명</div>
+            </div>
+            <div class="nl-section">
+              <div class="nl-sec-title">의상</div>
+              <div class="editable nl-sec-desc" contenteditable="true" data-default="의상 설명<br>의상 설명<br>의상 설명">의상 설명<br>의상 설명<br>의상 설명</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== MIDDLE: shared 2x2 grid + pair theme colours ===== -->
+      <div class="nl-middle">
+        <div class="nl-grid">
+          <div class="img-slot nl-cell" data-slot="mid-1">
+            <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+            <div class="hover-bar">이미지 변경</div>
+            <div class="clear-btn" title="이미지 제거">×</div>
+            <input type="file" accept="image/*">
+            <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+          </div>
+          <div class="img-slot nl-cell" data-slot="mid-2">
+            <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+            <div class="hover-bar">이미지 변경</div>
+            <div class="clear-btn" title="이미지 제거">×</div>
+            <input type="file" accept="image/*">
+            <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+          </div>
+          <div class="img-slot nl-cell" data-slot="mid-3">
+            <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+            <div class="hover-bar">이미지 변경</div>
+            <div class="clear-btn" title="이미지 제거">×</div>
+            <input type="file" accept="image/*">
+            <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+          </div>
+          <div class="img-slot nl-cell" data-slot="mid-4">
+            <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+            <div class="hover-bar">이미지 변경</div>
+            <div class="clear-btn" title="이미지 제거">×</div>
+            <input type="file" accept="image/*">
+            <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+          </div>
+        </div>
+
+        <div class="nl-theme">
+          <div class="swatch-row nl-theme-row">
+            <div class="swatch">
+              <div class="swatch-box theme-swatch" data-side="A" data-default="#8ECAE6" style="background:#8ECAE6;"><input type="color" value="#8ECAE6"></div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-box theme-swatch" data-side="B" data-default="#FFE9A8" style="background:#FFE9A8;"><input type="color" value="#FFE9A8"></div>
+            </div>
+            <div class="swatch">
+              <div class="swatch-box theme-swatch" data-default="#E7B7D8" style="background:#E7B7D8;"><input type="color" value="#E7B7D8"></div>
+            </div>
+          </div>
+          <div class="nl-theme-label">페어 테마색</div>
+        </div>
+      </div>
+
+      <!-- ===== B: header ===== -->
+      <div class="nl-head nl-head-b">
+          <div class="nl-badge" style="background:#1C1F26;">
+            <span class="nl-badge-text">캐릭터B</span>
+            <input type="color" class="nl-badge-color" data-default="#1C1F26" value="#1C1F26" title="클릭하여 색상 변경">
+          </div>
+          <div class="nl-head-text">
+            <div class="nl-name-row">
+              <div class="editable nl-name char-name" contenteditable="true" data-default="이름">이름</div>
+              <div class="editable nl-name-en" contenteditable="true" data-default="English Name">English Name</div>
+            </div>
+            <div class="editable nl-stat" contenteditable="true" data-default="성별 / 나이 / 신장 cm / 체중 kg">성별 / 나이 / 신장 cm / 체중 kg</div>
+          </div>
+      </div>
+
+      <!-- ===== B: body ===== -->
+      <div class="nl-body nl-body-b">
+        <div class="img-slot nl-main" data-slot="B-main">
+          <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+          <div class="hover-bar">클릭하여 이미지 변경</div>
+          <div class="clear-btn" title="이미지 제거">×</div>
+          <input type="file" accept="image/*">
+          <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+        </div>
+
+        <div class="nl-lower">
+          <div class="nl-side">
+            <div class="swatch-row nl-colors">
+              <div class="swatch">
+                <div class="swatch-box dual-color" data-default="#d9d9d9" data-default-shape="#8A8A8A" data-mode="solid" style="background:#d9d9d9;">
+                  <input type="color" class="swatch-color-1" value="#d9d9d9">
+                  <input type="color" class="swatch-color-2" value="#8A8A8A">
+                  <button type="button" class="swatch-mode-btn" title="단색 / 그라데이션 / 투톤 전환">◐</button>
+                </div>
+                <div class="swatch-label">머리</div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-box dual-color shape-enabled" data-default="#d9d9d9" data-default-shape="#4D4D4D" data-mode="solid" data-shape="none" style="background:#d9d9d9;">
+                  <input type="color" class="swatch-color-1" value="#d9d9d9">
+                  <input type="color" class="swatch-color-2" value="#4D4D4D">
+                  <button type="button" class="swatch-mode-btn" title="단색 / 그라데이션 / 투톤 전환">◐</button>
+                </div>
+                <div class="swatch-label">눈</div>
+              </div>
+              <div class="swatch">
+                <div class="swatch-box" data-default="#d9d9d9" style="background:#d9d9d9;"><input type="color" value="#d9d9d9"></div>
+                <div class="swatch-label">피부</div>
+              </div>
+            </div>
+            <div class="img-slot mini nl-animal" data-slot="B-animal">
+              <div class="placeholder"><div class="plus">+</div><div>이미지<br>삽입</div></div>
+              <div class="hover-bar">이미지 변경</div>
+              <div class="clear-btn" title="이미지 제거">×</div>
+              <input type="file" accept="image/*">
+              <div class="slot-caption editable" contenteditable="true" data-placeholder="커미션 출처"></div>
+            </div>
+            <div class="nl-animal-label"><span>동물화:</span><span class="editable" contenteditable="true" data-default="고양이">고양이</span></div>
+          </div>
+
+          <div class="nl-info">
+            <div class="editable nl-keywords" contenteditable="true" data-default="#키워드1 #키워드2 #키워드3">#키워드1 #키워드2 #키워드3</div>
+            <div class="nl-section">
+              <div class="nl-sec-title">특징</div>
+              <div class="editable nl-sec-desc" contenteditable="true" data-default="특징 설명<br>특징 설명<br>특징 설명">특징 설명<br>특징 설명<br>특징 설명</div>
+            </div>
+            <div class="nl-section">
+              <div class="nl-sec-title">의상</div>
+              <div class="editable nl-sec-desc" contenteditable="true" data-default="의상 설명<br>의상 설명<br>의상 설명">의상 설명<br>의상 설명<br>의상 설명</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="editable slot-caption nl-foot-caption" contenteditable="true" data-placeholder="커미션 출처"></div>
+
+    </div>
+  </div>
+</div>
+<div class="footnote">완성 후 상단의 PNG로 다운로드 버튼을 누르면 화면 그대로 이미지 파일로 저장됩니다. 작업 중인 내용은 저장 버튼으로 파일에 담아두었다가, 불러오기 버튼으로 다시 열 수 있습니다.<br>Created by <a href="https://x.com/gobsi6" target="_blank" rel="noopener" style="color:inherit;">@gobsi6</a></div>
+
+<div class="crop-overlay" id="cropOverlay" hidden>
+  <div class="crop-stage" id="cropStage">
+    <img id="cropImage" alt="">
+    <div class="crop-frame"></div>
+  </div>
+  <div class="crop-controls">
+    <div class="zoom-wrap">
+      <span>확대</span>
+      <input type="range" id="cropZoom" min="0.5" max="3.5" step="0.01" value="1">
+      <span class="crop-zoom-val" id="cropZoomVal">100%</span>
+    </div>
+    <div class="crop-btn-row">
+      <button type="button" class="crop-reset-btn" id="cropResetBtn">초기화</button>
+      <button type="button" class="crop-cancel-btn" id="cropCancelBtn">취소</button>
+      <button type="button" class="crop-apply-btn" id="cropApplyBtn">적용</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- Reusable image slot helpers (used by upload, clear, reset, and load-from-file) ----
+  function setSlotImage(slot, dataUrl, crop){
+    const placeholder = slot.querySelector('.placeholder');
+    // Probe the real pixel size so a small image isn't stretched up to fill the box.
+    const probe = new Image();
+    probe.onload = () => {
+      slot._sourceImage = probe;
+      slot._dataUrl = dataUrl;
+      slot.classList.add('has-img');
+      if(placeholder) placeholder.style.display = 'none';
+      if(crop && typeof crop === 'object'){
+        slot._crop = crop;
+      }else{
+        // Default: if the image is smaller than the box keep it at original size
+        // centered; otherwise cover-fill. Represented as a crop transform so the
+        // same rendering path handles both.
+        const boxW = slot.clientWidth;
+        const boxH = slot.clientHeight;
+        const fitsAsIs = probe.naturalWidth <= boxW && probe.naturalHeight <= boxH;
+        slot._crop = fitsAsIs ? { mode: 'original' } : { mode: 'cover' };
+      }
+      renderSlot(slot);
+    };
+    probe.src = dataUrl;
+  }
+
+  // Subtle bottom-shading gradient used only on the main image box, layered
+  // together with (and visible through) any transparency in the uploaded photo.
+  const MAIN_SLOT_GRADIENT = 'linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.18) 100%)';
+
+  // Applies the slot's stored crop to its on-screen background rendering.
+  function renderSlot(slot){
+    const img = slot._sourceImage;
+    if(!img) return;
+    const boxW = slot.clientWidth;
+    const boxH = slot.clientHeight;
+    const crop = slot._crop || { mode: 'cover' };
+    const isMain = slot.classList.contains('nl-main');
+    let photoSize, photoPos;
+    if(crop.mode === 'original'){
+      photoSize = `${img.naturalWidth}px ${img.naturalHeight}px`;
+      photoPos = 'center';
+    }else if(crop.mode === 'custom'){
+      // custom crop: scale is relative to cover-fit; focal is normalized 0..1
+      const coverScale = Math.max(boxW / img.naturalWidth, boxH / img.naturalHeight);
+      const drawScale = coverScale * (crop.zoom || 1);
+      const dispW = img.naturalWidth * drawScale;
+      const dispH = img.naturalHeight * drawScale;
+      // position so that the focal point maps to the box center, then clamp
+      let posX = boxW / 2 - crop.fx * dispW;
+      let posY = boxH / 2 - crop.fy * dispH;
+      if(dispW >= boxW){
+        posX = Math.min(0, Math.max(boxW - dispW, posX));
+      }else{
+        posX = (boxW - dispW) / 2; // zoomed out: centre with even side padding
+      }
+      if(dispH >= boxH){
+        posY = Math.min(0, Math.max(boxH - dispH, posY));
+      }else{
+        posY = (boxH - dispH) / 2;
+      }
+      photoSize = `${dispW}px ${dispH}px`;
+      photoPos = `${posX}px ${posY}px`;
+    }else{
+      photoSize = 'cover';
+      photoPos = 'center';
+    }
+    if(isMain){
+      // Photo layer on top, gradient layer beneath it (shows through any
+      // transparent pixels in the photo), flat --slot color as the base under both.
+      slot.style.backgroundImage = `url(${slot._dataUrl}), ${MAIN_SLOT_GRADIENT}`;
+      slot.style.backgroundSize = `${photoSize}, 100% 100%`;
+      slot.style.backgroundPosition = `${photoPos}, center`;
+    }else{
+      slot.style.backgroundImage = `url(${slot._dataUrl})`;
+      slot.style.backgroundSize = photoSize;
+      slot.style.backgroundPosition = photoPos;
+    }
+    slot.style.backgroundRepeat = 'no-repeat';
+  }
+
+  function rerenderAllSlots(){
+    document.querySelectorAll('.img-slot.has-img').forEach(renderSlot);
+  }
+
+  function clearSlotImage(slot){
+    const placeholder = slot.querySelector('.placeholder');
+    const input = slot.querySelector('input[type=file]');
+    slot.style.backgroundImage = '';
+    slot.style.backgroundSize = '';
+    slot.style.backgroundPosition = '';
+    slot.classList.remove('has-img');
+    if(placeholder) placeholder.style.display = 'flex';
+    if(input) input.value = '';
+    slot._sourceImage = null;
+    slot._crop = null;
+    slot._dataUrl = null;
+  }
+
+  // ---- Image slot upload handling ----
+  document.querySelectorAll('.img-slot').forEach(slot => {
+    const input = slot.querySelector('input[type=file]');
+    const clearBtn = slot.querySelector('.clear-btn');
+
+    // Inject a crop button (only meaningful once an image is present).
+    const cropBtn = document.createElement('div');
+    cropBtn.className = 'crop-btn';
+    cropBtn.textContent = '크롭';
+    slot.appendChild(cropBtn);
+    cropBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCropEditor(slot);
+    });
+
+    slot.addEventListener('click', (e) => {
+      if(e.target === clearBtn || e.target === cropBtn || e.target.closest('.slot-caption')) return;
+      input.click();
+    });
+
+    input.addEventListener('change', () => {
+      const file = input.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        setSlotImage(slot, ev.target.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      clearSlotImage(slot);
+    });
+
+    // drag & drop
+    slot.addEventListener('dragover', (e) => { e.preventDefault(); });
+    slot.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if(file && file.type.startsWith('image/')){
+        input.files = e.dataTransfer.files;
+        input.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+
+  // ---- Crop editor ----
+  const cropOverlay = document.getElementById('cropOverlay');
+  const cropStage = document.getElementById('cropStage');
+  const cropImage = document.getElementById('cropImage');
+  const cropZoom = document.getElementById('cropZoom');
+  const cropZoomVal = document.getElementById('cropZoomVal');
+  function updateCropZoomLabel(){
+    cropZoomVal.textContent = Math.round((cropState.zoom || 1) * 100) + '%';
+  }
+  let cropTarget = null;      // the slot being edited
+  let cropCoverScale = 1;     // scale at which the image exactly covers the frame
+  let cropState = { zoom: 1, x: 0, y: 0 }; // x/y = top-left offset of the image in stage px
+  let cropFrameW = 0, cropFrameH = 0;
+  let cropNatW = 0, cropNatH = 0;
+
+  function openCropEditor(slot){
+    if(!slot._sourceImage || !slot._dataUrl) return;
+    cropTarget = slot;
+    cropNatW = slot._sourceImage.naturalWidth;
+    cropNatH = slot._sourceImage.naturalHeight;
+
+    // Size the crop frame to match the slot's aspect ratio, fit within a max box.
+    const boxW = slot.clientWidth;
+    const boxH = slot.clientHeight;
+    const ratio = boxW / boxH;
+    const maxW = Math.min(560, window.innerWidth - 60);
+    const maxH = Math.min(560, window.innerHeight - 220);
+    if(maxW / maxH > ratio){
+      cropFrameH = maxH;
+      cropFrameW = maxH * ratio;
+    }else{
+      cropFrameW = maxW;
+      cropFrameH = maxW / ratio;
+    }
+    cropStage.style.width = cropFrameW + 'px';
+    cropStage.style.height = cropFrameH + 'px';
+    cropImage.src = slot._dataUrl;
+
+    // Base cover scale for this frame.
+    cropCoverScale = Math.max(cropFrameW / cropNatW, cropFrameH / cropNatH);
+
+    // Fixed zoom-out floor: always allow down to 50% regardless of the image, so
+    // the slider's minimum is a clean, predictable value. (100% = fills the frame.)
+    cropZoom.min = 0.5;
+
+    // Initialize from existing crop if it was a custom crop, else start at cover/center.
+    const c = slot._crop;
+    if(c && c.mode === 'custom'){
+      cropState.zoom = c.zoom || 1;
+      const drawScale = cropCoverScale * cropState.zoom;
+      const dispW = cropNatW * drawScale;
+      const dispH = cropNatH * drawScale;
+      cropState.x = cropFrameW / 2 - c.fx * dispW;
+      cropState.y = cropFrameH / 2 - c.fy * dispH;
+    }else{
+      cropState.zoom = 1;
+      const dispW = cropNatW * cropCoverScale;
+      const dispH = cropNatH * cropCoverScale;
+      cropState.x = (cropFrameW - dispW) / 2;
+      cropState.y = (cropFrameH - dispH) / 2;
+    }
+    cropZoom.value = cropState.zoom;
+    updateCropZoomLabel();
+    clampCrop();
+    applyCropTransform();
+    cropOverlay.hidden = false;
+  }
+
+  function applyCropTransform(){
+    const drawScale = cropCoverScale * cropState.zoom;
+    cropImage.style.width = (cropNatW * drawScale) + 'px';
+    cropImage.style.height = (cropNatH * drawScale) + 'px';
+    cropImage.style.transform = `translate(${cropState.x}px, ${cropState.y}px)`;
+  }
+
+  function clampCrop(){
+    const drawScale = cropCoverScale * cropState.zoom;
+    const dispW = cropNatW * drawScale;
+    const dispH = cropNatH * drawScale;
+    // When the image is larger than the frame on an axis, keep the frame fully
+    // covered (pan within bounds). When it's smaller (zoomed out past cover),
+    // centre it so the letterbox padding is even on both sides.
+    if(dispW >= cropFrameW){
+      cropState.x = Math.min(0, Math.max(cropFrameW - dispW, cropState.x));
+    }else{
+      cropState.x = (cropFrameW - dispW) / 2;
+    }
+    if(dispH >= cropFrameH){
+      cropState.y = Math.min(0, Math.max(cropFrameH - dispH, cropState.y));
+    }else{
+      cropState.y = (cropFrameH - dispH) / 2;
+    }
+  }
+
+  cropZoom.addEventListener('input', () => {
+    // Keep the frame center anchored while zooming.
+    const oldScale = cropCoverScale * cropState.zoom;
+    const cx = (cropFrameW / 2 - cropState.x) / oldScale;
+    const cy = (cropFrameH / 2 - cropState.y) / oldScale;
+    cropState.zoom = parseFloat(cropZoom.value);
+    const newScale = cropCoverScale * cropState.zoom;
+    cropState.x = cropFrameW / 2 - cx * newScale;
+    cropState.y = cropFrameH / 2 - cy * newScale;
+    clampCrop();
+    applyCropTransform();
+    updateCropZoomLabel();
+  });
+
+  let cropDragging = false, cropStartX = 0, cropStartY = 0, cropOrigX = 0, cropOrigY = 0;
+  cropStage.addEventListener('pointerdown', (e) => {
+    cropDragging = true;
+    cropStartX = e.clientX; cropStartY = e.clientY;
+    cropOrigX = cropState.x; cropOrigY = cropState.y;
+    cropStage.setPointerCapture(e.pointerId);
+  });
+  cropStage.addEventListener('pointermove', (e) => {
+    if(!cropDragging) return;
+    cropState.x = cropOrigX + (e.clientX - cropStartX);
+    cropState.y = cropOrigY + (e.clientY - cropStartY);
+    clampCrop();
+    applyCropTransform();
+  });
+  cropStage.addEventListener('pointerup', () => { cropDragging = false; });
+  cropStage.addEventListener('pointercancel', () => { cropDragging = false; });
+
+  function closeCropEditor(){
+    cropOverlay.hidden = true;
+    cropTarget = null;
+    cropImage.src = '';
+  }
+
+  document.getElementById('cropCancelBtn').addEventListener('click', closeCropEditor);
+
+  document.getElementById('cropResetBtn').addEventListener('click', () => {
+    // Back to the default framing: 100% (cover) and centred.
+    cropState.zoom = 1;
+    const dispW = cropNatW * cropCoverScale;
+    const dispH = cropNatH * cropCoverScale;
+    cropState.x = (cropFrameW - dispW) / 2;
+    cropState.y = (cropFrameH - dispH) / 2;
+    cropZoom.value = 1;
+    updateCropZoomLabel();
+    clampCrop();
+    applyCropTransform();
+  });
+
+  document.getElementById('cropApplyBtn').addEventListener('click', () => {
+    if(!cropTarget) return;
+    const drawScale = cropCoverScale * cropState.zoom;
+    const dispW = cropNatW * drawScale;
+    const dispH = cropNatH * drawScale;
+    // Normalized focal point (which point of the image sits at the frame center).
+    const fx = (cropFrameW / 2 - cropState.x) / dispW;
+    const fy = (cropFrameH / 2 - cropState.y) / dispH;
+    cropTarget._crop = { mode: 'custom', zoom: cropState.zoom, fx, fy };
+    renderSlot(cropTarget);
+    closeCropEditor();
+  });
+
+  // ---- Swatch color handling ----
+  document.querySelectorAll('.swatch-box').forEach(box => {
+    if(box.classList.contains('dual-color')) return; // handled separately below
+    const input = box.querySelector('input[type=color]');
+    input.addEventListener('input', () => {
+      box.style.background = input.value;
+      if(box.classList.contains('theme-swatch')){
+        updateThemeColors();
+      }
+    });
+  });
+
+  // ---- Dual-color swatches (머리/눈 only): solid / gradient / two-tone (좌우, 상하) ----
+  const SWATCH_MODES = ['solid', 'twotone-lr', 'twotone-tb', 'gradient'];
+  const SWATCH_MODE_LABELS = { solid: '단색', gradient: '그라데이션', 'twotone-lr': '투톤(좌우)', 'twotone-tb': '투톤(상하)' };
+  function computeSwatchBackground(mode, c1, c2){
+    if(mode === 'gradient') return `linear-gradient(to bottom, ${c1}, ${c2})`;
+    if(mode === 'twotone-lr') return `linear-gradient(to right, ${c1} 0%, ${c1} 50%, ${c2} 50%, ${c2} 100%)`;
+    if(mode === 'twotone-tb') return `linear-gradient(to bottom, ${c1} 0%, ${c1} 50%, ${c2} 50%, ${c2} 100%)`;
+    return c1;
+  }
+  const GRADIENT_DEFAULT_2 = '#8A8A8A';
+  function setupDualSwatch(box){
+    const input1 = box.querySelector('.swatch-color-1');
+    const input2 = box.querySelector('.swatch-color-2');
+    const modeBtn = box.querySelector('.swatch-mode-btn');
+    function refresh(){
+      const mode = box.dataset.mode || 'solid';
+      box.style.background = computeSwatchBackground(mode, input1.value, input2.value);
+      modeBtn.title = `현재: ${SWATCH_MODE_LABELS[mode]} · 클릭하여 전환`;
+    }
+    input1.addEventListener('input', refresh);
+    input2.addEventListener('input', () => {
+      box.dataset.color2Touched = 'true';
+      refresh();
+    });
+    modeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const cur = box.dataset.mode || 'solid';
+      const next = SWATCH_MODES[(SWATCH_MODES.indexOf(cur) + 1) % SWATCH_MODES.length];
+      // Eye chips' color-2 doubles as the shape-fill color (see setupShapeSwatch),
+      // with its own darker default. The first time an untouched eye chip (no
+      // shape picked yet, color-2 never manually changed) switches into
+      // gradient/two-tone, lighten color-2 so the gradient doesn't start out as
+      // dark as the shape-fill default — but leave it alone once the user (or
+      // the shape feature) has actually given it meaning.
+      if(cur === 'solid' && next !== 'solid' && box.classList.contains('shape-enabled') &&
+         box.dataset.color2Touched !== 'true' && (!box.dataset.shape || box.dataset.shape === 'none')){
+        input2.value = GRADIENT_DEFAULT_2;
+      }
+      box.dataset.mode = next;
+      refresh();
+    });
+    refresh();
+    box._refreshColor = refresh;
+  }
+  document.querySelectorAll('.swatch-box.dual-color').forEach(setupDualSwatch);
+
+  // ---- Eye-only optional shape overlay: square/circle/vertical/horizontal/ring/heart,
+  // filled with swatch-color-1 (solid only — gradient/two-tone don't apply here). ----
+  const EYE_SHAPES = [
+    { id: 'none', label: '도형 없음' },
+    { id: 'square', label: '사각형' },
+    { id: 'circle', label: '원' },
+    { id: 'diamond', label: '다이아몬드' },
+    { id: 'capsule-v', label: '세로형' },
+    { id: 'capsule-h', label: '가로형' },
+    { id: 'ring', label: '링' },
+    { id: 'heart', label: '하트' },
+  ];
+  function shapeIconMarkup(id){
+    switch(id){
+      case 'square': return '<rect x="0" y="0" width="24" height="24" rx="3"/>';
+      case 'circle': return '<circle cx="12" cy="12" r="9"/>';
+      case 'diamond': return '<polygon points="12,0 24,12 12,24 0,12"/>';
+      case 'capsule-v': return '<ellipse cx="12" cy="12" rx="4" ry="11"/>';
+      case 'capsule-h': return '<ellipse cx="12" cy="12" rx="11" ry="4"/>';
+      case 'ring': return '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="3.8"/>';
+      case 'heart': return '<path d="M12 20.5c-3.5-2.6-8-6.6-8-11A4.9 4.9 0 0 1 12 6.4 4.9 4.9 0 0 1 20 9.5c0 4.4-4.5 8.4-8 11z"/>';
+      default: return '';
+    }
+  }
+  function setupShapeSwatch(box){
+    const input1 = box.querySelector('.swatch-color-1');
+    const input2 = box.querySelector('.swatch-color-2');
+
+    const shapeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    shapeSvg.setAttribute('viewBox', '0 0 24 24');
+    shapeSvg.classList.add('swatch-shape-svg');
+    box.appendChild(shapeSvg);
+
+    const shapeBtn = document.createElement('button');
+    shapeBtn.type = 'button';
+    shapeBtn.className = 'swatch-shape-btn';
+    shapeBtn.title = '눈 모양 선택';
+    shapeBtn.innerHTML = '<svg viewBox="0 0 24 24" width="12" height="12"><polygon points="12,2 22,12 12,22 2,12" fill="currentColor"/></svg>';
+    box.appendChild(shapeBtn);
+
+    const popover = document.createElement('div');
+    popover.className = 'swatch-shape-popover';
+    popover.hidden = true;
+    EYE_SHAPES.forEach(s => {
+      const optBtn = document.createElement('button');
+      optBtn.type = 'button';
+      optBtn.className = 'shape-opt';
+      optBtn.dataset.shape = s.id;
+      optBtn.title = s.label;
+      if(s.id === 'none'){
+        optBtn.textContent = '';
+      }else{
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.innerHTML = shapeIconMarkup(s.id);
+        optBtn.appendChild(svg);
+      }
+      optBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        box.dataset.shape = s.id;
+        if(s.id !== 'none'){
+          // The base chip keeps its own color/mode (request: don't lose the
+          // underlying color) — only the base's mode is pinned to solid so the
+          // gradient/two-tone split-click zones don't collide with the shape's
+          // own click zone below.
+          box.dataset.mode = 'solid';
+          if(box._refreshColor) box._refreshColor();
+        }
+        popover.hidden = true;
+        refreshShape();
+      });
+      popover.appendChild(optBtn);
+    });
+    box.appendChild(popover);
+
+    function refreshShape(){
+      const shape = box.dataset.shape || 'none';
+      box.classList.toggle('has-shape', shape !== 'none');
+      shapeSvg.innerHTML = shape === 'none' ? '' : shapeIconMarkup(shape);
+      shapeSvg.style.color = input2.value;
+      popover.querySelectorAll('.shape-opt').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.shape === shape);
+      });
+    }
+
+    shapeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      popover.hidden = !popover.hidden;
+    });
+    document.addEventListener('click', (e) => {
+      if(!box.contains(e.target)) popover.hidden = true;
+    });
+    input2.addEventListener('input', refreshShape);
+    refreshShape();
+    box._refreshShape = refreshShape;
+  }
+  document.querySelectorAll('.swatch-box.shape-enabled').forEach(setupShapeSwatch);
+
+  // ---- Character A/B badge color handling ----
+  function applyBadgeColorToSide(side, hex){
+    const text = readableTextFor(hex);
+    document.querySelectorAll(`.nl-body-${side} .nl-sec-title`).forEach(el => {
+      el.style.background = hex;
+      el.style.color = text;
+    });
+    document.querySelectorAll(`.nl-body-${side} .nl-animal-label`).forEach(el => {
+      el.style.background = hex;
+      el.style.color = text;
+    });
+  }
+  document.querySelectorAll('.nl-badge-color').forEach(input => {
+    const badge = input.closest('.nl-badge');
+    const side = badge.closest('.nl-head-a') ? 'a' : 'b';
+    input.addEventListener('input', () => {
+      badge.style.background = input.value;
+      badge.style.color = readableTextFor(input.value);
+      applyBadgeColorToSide(side, input.value);
+      refreshAllBubbleColors();
+    });
+    applyBadgeColorToSide(side, input.value);
+  });
+
+  // ---- Theme color propagation (테마색 swatch -> A/B accent elements) ----
+  // When a theme color is light, switch its label text to a dark gray instead of
+  // white so it stays readable.
+  function getLuminance(hex){
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  }
+  function readableTextFor(hex){
+    return getLuminance(hex) > 0.6 ? '#333333' : '#FFFFFF';
+  }
+
+  function updateThemeColors(){
+    const aInput = document.querySelector('.theme-swatch[data-side="A"] input[type=color]');
+    const bInput = document.querySelector('.theme-swatch[data-side="B"] input[type=color]');
+    const aColor = aInput ? aInput.value : '#8ECAE6';
+    const bColor = bInput ? bInput.value : '#FFE9A8';
+    const aText = readableTextFor(aColor);
+    const bText = readableTextFor(bColor);
+
+    document.querySelectorAll('.card-col[data-side="A"] .col-label').forEach(el => {
+      el.style.background = aColor;
+      el.style.color = aText;
+    });
+    document.querySelectorAll('.card-col[data-side="B"] .col-label').forEach(el => {
+      el.style.background = bColor;
+      el.style.color = bText;
+    });
+    document.querySelectorAll('.card-col[data-side="A"] .badge-label').forEach(el => {
+      el.style.background = aColor;
+      el.style.color = aText;
+    });
+    document.querySelectorAll('.card-col[data-side="B"] .badge-label').forEach(el => {
+      el.style.background = bColor;
+      el.style.color = bText;
+    });
+    refreshAllBubbleColors();
+  }
+  updateThemeColors();
+
+  // ---- Contenteditable: select all text on the FIRST focus only (quick replace
+  // of the default text), then leave later clicks alone so the caret lands where
+  // the user clicks. ----
+  function wireEditableBehavior(el){
+    el.addEventListener('focus', function selectAllOnFirstFocus(){
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }, { once: true });
+    el.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        if(e.altKey){
+          document.execCommand('insertLineBreak');
+          // execCommand sometimes leaves the selection anchored at its old spot
+          // instead of moving with the newly-inserted line break — force it to
+          // collapse to wherever the selection now actually ends, so the caret
+          // (and anything typed next) follows the break onto the new line.
+          const sel = window.getSelection();
+          if(sel && sel.rangeCount > 0){
+            sel.collapseToEnd();
+          }
+        }else{
+          el.blur();
+        }
+      }
+    });
+  }
+  document.querySelectorAll('.editable').forEach(wireEditableBehavior);
+
+  // ---- Slot caption (bottom-right credit text): toggle visibility based on content ----
+  function refreshSlotCaption(el){
+    const hasText = el.textContent.trim().length > 0;
+    if(!hasText && el.innerHTML !== ''){
+      // Deleting all typed text with backspace often leaves a stray <br> behind,
+      // which defeats the CSS :empty selector used to show the placeholder hint.
+      // Force true emptiness so the "커미션 출처" hint reliably comes back.
+      el.innerHTML = '';
+    }
+    el.classList.toggle('has-text', hasText);
+  }
+  document.querySelectorAll('.slot-caption').forEach(el => {
+    refreshSlotCaption(el);
+    el.addEventListener('input', () => refreshSlotCaption(el));
+  });
+
+  // (The center-image "merge" feature from the previous layout is not used in this
+  // layout, which has a fixed 2x2 grid of independent image slots.)
+  function setMiddleMerged(){ /* no-op: kept so older call sites stay harmless */ }
+
+  // ---- Point lists (중요 포인트): add/remove items dynamically ----
+  function createPointItem(text, textClass){
+    const row = document.createElement('div');
+    row.className = 'sub-text-row point-item';
+
+    const box = document.createElement('span');
+    box.className = 'check-box';
+    row.appendChild(box);
+
+    const textEl = document.createElement('div');
+    textEl.className = `editable ${textClass} point-text`;
+    textEl.contentEditable = 'true';
+    textEl.dataset.default = '중요 포인트';
+    textEl.textContent = text != null ? text : '중요 포인트';
+    row.appendChild(textEl);
+    wireEditableBehavior(textEl);
+
+    const delBtn = document.createElement('span');
+    delBtn.className = 'point-delete';
+    delBtn.title = '삭제';
+    delBtn.textContent = '\u00d7';
+    delBtn.addEventListener('click', () => { row.remove(); });
+    row.appendChild(delBtn);
+
+    return row;
+  }
+
+  document.querySelectorAll('.point-delete').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const row = btn.closest('.point-item');
+      if(row) row.remove();
+    });
+  });
+
+  document.querySelectorAll('.add-point-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const list = btn.closest('.point-list, .mid-text-block');
+      if(!list) return;
+      const textClass = list.classList.contains('mid-text-block') ? 'mid-sub-text' : 'sub-text';
+      const row = createPointItem('중요 포인트', textClass);
+      list.insertBefore(row, btn);
+      row.querySelector('.point-text').focus();
+    });
+  });
+
+  // ---- Reset ----
+  // ---- Image size settings: live-adjust slot sizes via CSS variables ----
+  const sizePanel = document.getElementById('sizePanel');
+  document.getElementById('sizeSettingsBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    sizePanel.hidden = !sizePanel.hidden;
+  });
+  document.addEventListener('click', (e) => {
+    if(!sizePanel.hidden && !sizePanel.contains(e.target) && e.target.id !== 'sizeSettingsBtn'){
+      sizePanel.hidden = true;
+    }
+  });
+
+  // ---- Alignment ruler (toggleable, for lining up stickers/bubbles) ----
+  const rulerOverlay = document.getElementById('rulerOverlay');
+  const rulerH = document.getElementById('rulerH');
+  const rulerV = document.getElementById('rulerV');
+  const rulerGuidesEl = document.getElementById('rulerGuides');
+  const rulerToggleBtn = document.getElementById('rulerToggleBtn');
+  let rulerOn = false;
+  let guides = []; // { type: 'h'|'v', pos: number, el }
+
+  function buildRuler(){
+    if(!rulerOn) return;
+    const stageEl = document.getElementById('stage');
+    rulerH.innerHTML = '';
+    rulerV.innerHTML = '';
+    const w = stageEl.clientWidth;
+    const h = stageEl.clientHeight;
+    const step = 50;
+    const frag = (list, size, axisProp) => {
+      for(let p = 0; p <= size; p += 10){
+        const isMajor = p % step === 0;
+        const tick = document.createElement('div');
+        tick.className = 'ruler-tick' + (isMajor ? ' major' : '');
+        tick.style[axisProp] = p + 'px';
+        list.appendChild(tick);
+        if(isMajor && p > 0){
+          const label = document.createElement('div');
+          label.className = 'ruler-label';
+          label.style[axisProp] = p + 'px';
+          label.textContent = p;
+          list.appendChild(label);
+        }
+      }
+    };
+    frag(rulerH, w, 'left');
+    frag(rulerV, h, 'top');
+    renderGuides();
+  }
+
+  function renderGuides(){
+    rulerGuidesEl.innerHTML = '';
+    guides.forEach(g => {
+      const el = document.createElement('div');
+      el.className = 'ruler-guide ' + g.type;
+      if(g.type === 'h'){ el.style.top = g.pos + 'px'; }
+      else{ el.style.left = g.pos + 'px'; }
+      const line = document.createElement('div');
+      line.className = 'guide-line';
+      el.appendChild(line);
+      el.title = '드래그해서 이동, 더블클릭으로 삭제';
+      wireGuideDrag(el, g);
+      g.el = el;
+      rulerGuidesEl.appendChild(el);
+    });
+  }
+
+  function wireGuideDrag(el, g){
+    let dragging = false;
+    el.addEventListener('pointerdown', (e) => {
+      dragging = true;
+      el.setPointerCapture(e.pointerId);
+      e.stopPropagation();
+    });
+    el.addEventListener('pointermove', (e) => {
+      if(!dragging) return;
+      const stageEl = document.getElementById('stage');
+      const r = stageEl.getBoundingClientRect();
+      if(g.type === 'h'){
+        g.pos = Math.round(e.clientY - r.top);
+        el.style.top = g.pos + 'px';
+      }else{
+        g.pos = Math.round(e.clientX - r.left);
+        el.style.left = g.pos + 'px';
+      }
+    });
+    el.addEventListener('pointerup', () => { dragging = false; });
+    el.addEventListener('pointercancel', () => { dragging = false; });
+    el.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      guides = guides.filter(x => x !== g);
+      el.remove();
+    });
+  }
+
+  function addGuideFromRuler(type, e){
+    const stageEl = document.getElementById('stage');
+    const r = stageEl.getBoundingClientRect();
+    const pos = type === 'h' ? Math.round(e.clientY - r.top) : Math.round(e.clientX - r.left);
+    const g = { type, pos };
+    guides.push(g);
+    renderGuides();
+    // Immediately continue dragging the freshly created guide.
+    if(g.el){
+      g.el.dispatchEvent(new PointerEvent('pointerdown', { pointerId: e.pointerId, clientX: e.clientX, clientY: e.clientY, bubbles: true }));
+    }
+  }
+
+  rulerH.addEventListener('pointerdown', (e) => {
+    if(e.target !== rulerH) return; // ignore clicks that already hit a tick/label
+    addGuideFromRuler('h', e);
+  });
+  rulerV.addEventListener('pointerdown', (e) => {
+    if(e.target !== rulerV) return;
+    addGuideFromRuler('v', e);
+  });
+
+  rulerToggleBtn.addEventListener('click', () => {
+    rulerOn = !rulerOn;
+    document.getElementById('stage').classList.toggle('show-ruler', rulerOn);
+    rulerToggleBtn.classList.toggle('active', rulerOn);
+    if(rulerOn){
+      if(guides.length === 0){
+        // Seed with the classic centered crosshair guides on first use.
+        const stageEl = document.getElementById('stage');
+        guides = [
+          { type: 'h', pos: Math.round(stageEl.clientHeight / 2) },
+          { type: 'v', pos: Math.round(stageEl.clientWidth / 2) }
+        ];
+      }
+      buildRuler();
+    }
+  });
+
+  const squareHeightRange = document.getElementById('squareHeightRange');
+  const squareHeightVal = document.getElementById('squareHeightVal');
+  squareHeightRange.addEventListener('input', () => {
+    document.documentElement.style.setProperty('--square-h', squareHeightRange.value + 'px');
+    squareHeightVal.textContent = squareHeightRange.value + 'px';
+    rerenderAllSlots();
+    buildRuler();
+  });
+
+  const tallWidthRange = document.getElementById('tallWidthRange');
+  const tallWidthVal = document.getElementById('tallWidthVal');
+  tallWidthRange.addEventListener('input', () => {
+    document.documentElement.style.setProperty('--tall-w', tallWidthRange.value + 'px');
+    tallWidthVal.textContent = tallWidthRange.value + 'px';
+    rerenderAllSlots();
+    buildRuler();
+  });
+
+  const miniSizeRange = document.getElementById('miniSizeRange');
+  const miniSizeVal = document.getElementById('miniSizeVal');
+  const SWATCH_BASE_SIZE = 58;
+  const SWATCH_MIN_SIZE = 46;
+  const SWATCH_BASE_GAP = 18;
+  const SWATCH_GAP_MIN = 6;
+  const MINI_SIZE_DEFAULT = 210;
+  // Color chips (머리/눈/피부) scale in step with the animal-image size in both
+  // directions — growing as the image is enlarged (up to the 260px max) and
+  // shrinking as it's reduced, clamped to a 46px floor so they never get too
+  // small to click. The gap between chips scales by the same ratio (down to a
+  // small floor) so the whole row's total width always tracks the image width.
+  function updateSwatchSize(){
+    const miniSize = parseFloat(miniSizeRange.value) || MINI_SIZE_DEFAULT;
+    const ratio = miniSize / MINI_SIZE_DEFAULT;
+    const swatchSize = Math.max(SWATCH_MIN_SIZE, SWATCH_BASE_SIZE * ratio);
+    const swatchGap = Math.max(SWATCH_GAP_MIN, SWATCH_BASE_GAP * ratio);
+    document.documentElement.style.setProperty('--swatch-size', swatchSize + 'px');
+    document.documentElement.style.setProperty('--swatch-gap', swatchGap + 'px');
+  }
+  updateSwatchSize();
+  miniSizeRange.addEventListener('input', () => {
+    document.documentElement.style.setProperty('--mini-size', miniSizeRange.value + 'px');
+    miniSizeVal.textContent = miniSizeRange.value + 'px';
+    updateSwatchSize();
+    rerenderAllSlots();
+  });
+
+  function resetSizes(){
+    document.documentElement.style.setProperty('--square-h', '500px');
+    document.documentElement.style.setProperty('--tall-w', '200px');
+    document.documentElement.style.setProperty('--mini-size', '210px');
+    squareHeightRange.value = 500;
+    squareHeightVal.textContent = '500px';
+    tallWidthRange.value = 200;
+    tallWidthVal.textContent = '200px';
+    miniSizeRange.value = 210;
+    miniSizeVal.textContent = '210px';
+    updateSwatchSize();
+    rerenderAllSlots();
+    buildRuler();
+  }
+  document.getElementById('sizeResetBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    resetSizes();
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', () => {
+    if(!confirm('모든 이미지, 색상, 텍스트를 초기 상태로 되돌릴까요?')) return;
+    // The click that opened this confirm() also triggered the delegated
+    // autosave listener, which scheduled a save of the *pre-reset* state a
+    // moment from now — cancel it, or it would silently overwrite the
+    // localStorage.removeItem() below with the old data once its timer fires.
+    if(autosaveTimer){ clearTimeout(autosaveTimer); autosaveTimer = null; }
+    try{ localStorage.removeItem('ranteu-pairtle-maker-autosave-v1'); }catch(err){}
+    document.querySelectorAll('.img-slot').forEach(slot => {
+      clearSlotImage(slot);
+    });
+    document.querySelectorAll('.sticker').forEach(el => el.remove());
+    document.querySelectorAll('.bubble').forEach(el => el.remove());
+    document.querySelectorAll('.swatch-box').forEach(box => {
+      const defaultColor = box.dataset.default || '#d9d9d9';
+      if(box.classList.contains('dual-color')){
+        box.dataset.mode = 'solid';
+        delete box.dataset.color2Touched;
+        box.querySelector('.swatch-color-1').value = defaultColor;
+        // color-2 doubles as the shape's own fill on shape-enabled (눈) boxes,
+        // which has its own (darker) default, separate from the base color.
+        box.querySelector('.swatch-color-2').value = box.dataset.defaultShape || defaultColor;
+        box.style.background = defaultColor;
+      }else{
+        box.style.background = defaultColor;
+        box.querySelector('input[type=color]').value = defaultColor;
+      }
+      if(box.classList.contains('shape-enabled')){
+        box.dataset.shape = 'none';
+        if(box._refreshShape) box._refreshShape();
+      }
+    });
+    document.querySelectorAll('.nl-badge-color').forEach(input => {
+      const defaultColor = input.dataset.default || '#1C1F26';
+      const badge = input.closest('.nl-badge');
+      badge.style.background = defaultColor;
+      badge.style.color = '#fff';
+      input.value = defaultColor;
+      const side = badge.closest('.nl-head-a') ? 'a' : 'b';
+      applyBadgeColorToSide(side, defaultColor);
+    });
+    document.querySelectorAll('.editable[data-default]').forEach(el => {
+      el.innerHTML = el.dataset.default;
+    });
+    document.querySelectorAll('.slot-caption').forEach(el => {
+      el.textContent = '';
+      refreshSlotCaption(el);
+    });
+    document.querySelectorAll('[data-list-id]').forEach(list => {
+      const textClass = list.classList.contains('mid-text-block') ? 'mid-sub-text' : 'sub-text';
+      const addBtn = list.querySelector('.add-point-btn');
+      list.querySelectorAll('.point-item').forEach(el => el.remove());
+      for(let i = 0; i < 3; i++){
+        const row = createPointItem('중요 포인트', textClass);
+        list.insertBefore(row, addBtn);
+      }
+    });
+    setMiddleMerged(false);
+    resetSizes();
+    applyFrameColor('#A6A6A6');
+    document.querySelectorAll('.slot-color-input').forEach(input => {
+      input.value = SLOT_COLOR_DEFAULT;
+      applySlotColor(input.dataset.slot, SLOT_COLOR_DEFAULT);
+    });
+    applyPairHeaderImage(null);
+    updateThemeColors();
+  });
+
+  // ---- Stickers: free-floating, draggable, resizable images placed on top of the card ----
+  // Flat, single-color line icons (stroke:currentColor) for the lock/send-to-back
+  // buttons — used on both stickers and speech bubbles.
+  const ICON_LOCK_OPEN = '<svg viewBox="0 0 24 24" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V7a4 4 0 0 1 7.6-1.8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICON_LOCK_CLOSED = '<svg viewBox="0 0 24 24" width="14" height="14"><rect x="5" y="11" width="14" height="10" rx="2" fill="currentColor"/><path d="M8 11V7a4 4 0 0 1 8 0v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const ICON_SEND_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 1 1 0 10H9"/></svg>';
+  const ICON_FLIP_H = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M7 8 3 12l4 4"/><path d="M3 12h18"/><path d="M17 8l4 4-4 4"/></svg>';
+  const ICON_FLIP_V = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M8 7 12 3l4 4"/><path d="M12 3v18"/><path d="M8 17l4 4 4-4"/></svg>';
+
+  let stickerZ = 100;
+
+  function sendStickerToBack(el){
+    const others = Array.from(document.querySelectorAll('.sticker')).filter(s => s !== el);
+    const minZ = others.length ? Math.min(...others.map(s => parseInt(s.style.zIndex) || 0)) : stickerZ;
+    el.style.zIndex = minZ - 1;
+  }
+
+  function createSticker(dataUrl, opts){
+    opts = opts || {};
+    const stage = document.getElementById('stage');
+    const probe = new Image();
+    probe.onload = () => {
+      const maxDim = 180;
+      const scale = Math.min(1, maxDim / Math.max(probe.naturalWidth, probe.naturalHeight));
+      const naturalW = Math.round(probe.naturalWidth * scale);
+      const naturalH = Math.round(probe.naturalHeight * scale);
+      const width = opts.width || naturalW;
+      const height = opts.height || naturalH;
+      const x = opts.x != null ? opts.x : Math.round((stage.clientWidth - width) / 2);
+      const y = opts.y != null ? opts.y : Math.round((stage.clientHeight - height) / 2);
+
+      const el = document.createElement('div');
+      el.className = 'sticker';
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+      el.style.width = width + 'px';
+      el.style.height = height + 'px';
+      if(typeof opts.zIndex === 'number' && !Number.isNaN(opts.zIndex)){
+        el.style.zIndex = opts.zIndex;
+        stickerZ = Math.max(stickerZ, opts.zIndex);
+      }else{
+        el.style.zIndex = ++stickerZ;
+      }
+      el.dataset.dataUrl = dataUrl;
+
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.draggable = false;
+      el.appendChild(img);
+
+      const delBtn = document.createElement('div');
+      delBtn.className = 'sticker-delete';
+      delBtn.title = '스티커 삭제';
+      delBtn.textContent = '\u00d7';
+      delBtn.addEventListener('click', (e) => { e.stopPropagation(); el.remove(); });
+      el.appendChild(delBtn);
+
+      const resizeHandle = document.createElement('div');
+      resizeHandle.className = 'sticker-resize';
+      resizeHandle.title = '드래그해서 크기 조절';
+      el.appendChild(resizeHandle);
+
+      const borderToggle = document.createElement('div');
+      borderToggle.className = 'sticker-border-toggle';
+      borderToggle.title = '흰 테두리 추가/제거';
+      borderToggle.textContent = '\u25cb';
+      borderToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        el.classList.toggle('has-border');
+      });
+      el.appendChild(borderToggle);
+      if(opts.hasBorder) el.classList.add('has-border');
+
+      const lockBtn = document.createElement('div');
+      lockBtn.className = 'sticker-lock-btn';
+      lockBtn.title = '잠금 (스티커 임시 비활성화)';
+      lockBtn.innerHTML = ICON_LOCK_OPEN;
+      lockBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const locked = el.classList.toggle('locked');
+        lockBtn.innerHTML = locked ? ICON_LOCK_CLOSED : ICON_LOCK_OPEN;
+        lockBtn.title = locked ? '잠금 해제' : '잠금 (스티커 임시 비활성화)';
+      });
+      el.appendChild(lockBtn);
+      if(opts.locked){
+        el.classList.add('locked');
+        lockBtn.innerHTML = ICON_LOCK_CLOSED;
+        lockBtn.title = '잠금 해제';
+      }
+
+      const backBtn = document.createElement('div');
+      backBtn.className = 'sticker-back-btn';
+      backBtn.title = '스티커 순서 뒤로 보내기';
+      backBtn.innerHTML = ICON_SEND_BACK;
+      backBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sendStickerToBack(el);
+      });
+      el.appendChild(backBtn);
+
+      stage.appendChild(el);
+      makeStickerInteractive(el, resizeHandle);
+    };
+    probe.src = dataUrl;
+  }
+
+  function makeStickerInteractive(el, resizeHandle){
+    let dragging = false, resizing = false;
+    let startX = 0, startY = 0, startLeft = 0, startTop = 0, startW = 0, startH = 0;
+
+    el.addEventListener('pointerdown', (e) => {
+      if(e.target === resizeHandle || e.target.closest('.sticker-delete') || e.target.closest('.sticker-border-toggle') || e.target.closest('.sticker-lock-btn') || e.target.closest('.sticker-back-btn')) return;
+      dragging = true;
+      el.classList.add('sticker-active');
+      el.style.zIndex = ++stickerZ;
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = parseFloat(el.style.left) || 0;
+      startTop = parseFloat(el.style.top) || 0;
+      el.setPointerCapture(e.pointerId);
+      e.stopPropagation();
+    });
+    el.addEventListener('pointermove', (e) => {
+      if(!dragging) return;
+      el.style.left = (startLeft + (e.clientX - startX)) + 'px';
+      el.style.top = (startTop + (e.clientY - startY)) + 'px';
+    });
+    el.addEventListener('pointerup', () => { dragging = false; el.classList.remove('sticker-active'); });
+    el.addEventListener('pointercancel', () => { dragging = false; el.classList.remove('sticker-active'); });
+
+    resizeHandle.addEventListener('pointerdown', (e) => {
+      resizing = true;
+      el.classList.add('sticker-active');
+      startX = e.clientX;
+      startY = e.clientY;
+      startW = el.offsetWidth;
+      startH = el.offsetHeight;
+      resizeHandle.setPointerCapture(e.pointerId);
+      e.stopPropagation();
+    });
+    resizeHandle.addEventListener('pointermove', (e) => {
+      if(!resizing) return;
+      const scale = Math.max(0.2, (startW + (e.clientX - startX)) / startW);
+      el.style.width = Math.max(30, Math.round(startW * scale)) + 'px';
+      el.style.height = Math.max(30, Math.round(startH * scale)) + 'px';
+      e.stopPropagation();
+    });
+    resizeHandle.addEventListener('pointerup', () => { resizing = false; el.classList.remove('sticker-active'); });
+    resizeHandle.addEventListener('pointercancel', () => { resizing = false; el.classList.remove('sticker-active'); });
+  }
+
+  document.getElementById('addStickerBtn').addEventListener('click', () => {
+    document.getElementById('stickerInput').click();
+  });
+  document.getElementById('stickerInput').addEventListener('change', () => {
+    const input = document.getElementById('stickerInput');
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { createSticker(ev.target.result); };
+    reader.readAsDataURL(file);
+    input.value = '';
+  });
+
+  // ---- Speech bubbles: free-floating, draggable, resizable text bubbles ----
+  function getThemeColor(side){
+    const headClass = side === 'B' ? 'nl-head-b' : 'nl-head-a';
+    const input = document.querySelector(`.${headClass} .nl-badge-color`);
+    if(input) return input.value;
+    return '#1C1F26';
+  }
+
+  function refreshBubbleColor(el){
+    const side = el.dataset.side === 'B' ? 'B' : 'A';
+    const color = getThemeColor(side);
+    const body = el.querySelector('.bubble-body');
+    const tail = el.querySelector('.bubble-tail');
+    const textColor = readableTextFor(color);
+    body.style.background = color;
+    body.style.color = textColor;
+    tail.style.borderTopColor = color;
+    tail.style.borderBottomColor = color;
+    el.querySelectorAll('.bubble-color-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.side === side);
+    });
+  }
+  function refreshAllBubbleColors(){
+    document.querySelectorAll('.bubble').forEach(refreshBubbleColor);
+  }
+
+  // Controls/resize-handle are children of the scaled .bubble element, so they'd
+  // otherwise grow/shrink along with it. Apply an inverse scale so they stay a
+  // fixed, comfortable size no matter how big or small the bubble is stretched.
+  function updateBubbleCounterScale(el){
+    const s = parseFloat(el.dataset.scale) || 1;
+    const inv = 1 / s;
+    const controls = el.querySelector('.bubble-controls');
+    const resizeHandle = el.querySelector('.bubble-resize');
+    if(controls) controls.style.transform = `scale(${inv})`;
+    if(resizeHandle) resizeHandle.style.transform = `scale(${inv})`;
+  }
+
+  // The header row (edit controls) reserves 34px above the body via .bubble's
+  // padding-top, and .bubble itself is uniformly scaled via transform:scale().
+  // Because that transform scales the padding along with everything else, the
+  // on-screen gap between the fixed-size controls and the body used to grow
+  // (or shrink) with scale. Pre-dividing the padding-top by the scale cancels
+  // that out so the reserved header height stays a constant 34px on screen no
+  // matter how big or small the bubble is stretched.
+  const BUBBLE_HEADER_PX = 34;
+  function applyBubbleScale(el, scale){
+    el.dataset.scale = scale;
+    el.style.transform = `scale(${scale})`;
+    el.style.paddingTop = (BUBBLE_HEADER_PX / scale) + 'px';
+    updateBubbleCounterScale(el);
+  }
+
+  let bubbleZ = 100;
+  function createBubble(opts){
+    opts = opts || {};
+    const stage = document.getElementById('stage');
+    const side = opts.side === 'B' ? 'B' : 'A';
+    const tailDir = opts.tailDir === 'right' ? 'right' : 'left';
+    const tailSide = opts.tailSide === 'top' ? 'top' : 'bottom';
+    const scale = opts.scale || 1;
+    const text = opts.text != null ? opts.text : '텍스트를 입력하세요';
+
+    const el = document.createElement('div');
+    el.className = `bubble tail-${tailDir} side-${tailSide}`;
+    el.dataset.side = side;
+    el.dataset.tailDir = tailDir;
+    el.dataset.tailSide = tailSide;
+    el.dataset.scale = scale;
+    el.style.zIndex = ++bubbleZ;
+
+    const body = document.createElement('div');
+    body.className = 'bubble-body';
+
+    const textEl = document.createElement('div');
+    textEl.className = 'editable bubble-text';
+    textEl.contentEditable = 'true';
+    textEl.dataset.default = '텍스트를 입력하세요';
+    textEl.textContent = text;
+    body.appendChild(textEl);
+    wireEditableBehavior(textEl);
+
+    const tail = document.createElement('div');
+    tail.className = 'bubble-tail';
+    body.appendChild(tail);
+
+    const controls = document.createElement('div');
+    controls.className = 'bubble-controls';
+
+    const colorA = document.createElement('button');
+    colorA.type = 'button';
+    colorA.className = 'bubble-color-btn';
+    colorA.dataset.side = 'A';
+    colorA.title = 'A 테마색';
+    colorA.style.background = getThemeColor('A');
+    colorA.addEventListener('click', (e) => {
+      e.stopPropagation();
+      el.dataset.side = 'A';
+      refreshBubbleColor(el);
+    });
+    controls.appendChild(colorA);
+
+    const colorB = document.createElement('button');
+    colorB.type = 'button';
+    colorB.className = 'bubble-color-btn';
+    colorB.dataset.side = 'B';
+    colorB.title = 'B 테마색';
+    colorB.style.background = getThemeColor('B');
+    colorB.addEventListener('click', (e) => {
+      e.stopPropagation();
+      el.dataset.side = 'B';
+      refreshBubbleColor(el);
+    });
+    controls.appendChild(colorB);
+
+    const flipBtn = document.createElement('button');
+    flipBtn.type = 'button';
+    flipBtn.className = 'bubble-flip-btn';
+    flipBtn.title = '꼬리 좌우 전환';
+    flipBtn.innerHTML = ICON_FLIP_H;
+    flipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const next = el.dataset.tailDir === 'left' ? 'right' : 'left';
+      el.dataset.tailDir = next;
+      el.classList.remove('tail-left', 'tail-right');
+      el.classList.add(`tail-${next}`);
+    });
+    controls.appendChild(flipBtn);
+
+    const vflipBtn = document.createElement('button');
+    vflipBtn.type = 'button';
+    vflipBtn.className = 'bubble-flip-btn';
+    vflipBtn.title = '꼬리 상하 전환';
+    vflipBtn.innerHTML = ICON_FLIP_V;
+    vflipBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const next = el.dataset.tailSide === 'top' ? 'bottom' : 'top';
+      el.dataset.tailSide = next;
+      el.classList.remove('side-top', 'side-bottom');
+      el.classList.add(`side-${next}`);
+    });
+    controls.appendChild(vflipBtn);
+
+    const delBtn = document.createElement('button');
+    delBtn.type = 'button';
+    delBtn.className = 'bubble-delete-btn';
+    delBtn.title = '말풍선 삭제';
+    delBtn.textContent = '\u00d7';
+    delBtn.addEventListener('click', (e) => { e.stopPropagation(); el.remove(); });
+    controls.appendChild(delBtn);
+
+    const lockBtn = document.createElement('button');
+    lockBtn.type = 'button';
+    lockBtn.className = 'bubble-lock-btn';
+    lockBtn.title = '잠금 (말풍선 임시 비활성화)';
+    lockBtn.innerHTML = ICON_LOCK_OPEN;
+    lockBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const locked = el.classList.toggle('locked');
+      lockBtn.innerHTML = locked ? ICON_LOCK_CLOSED : ICON_LOCK_OPEN;
+      lockBtn.title = locked ? '잠금 해제' : '잠금 (말풍선 임시 비활성화)';
+    });
+    controls.appendChild(lockBtn);
+    if(opts.locked){
+      el.classList.add('locked');
+      lockBtn.innerHTML = ICON_LOCK_CLOSED;
+      lockBtn.title = '잠금 해제';
+    }
+
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'bubble-resize';
+    resizeHandle.title = '드래그해서 크기 조절';
+
+    el.appendChild(body);
+    el.appendChild(controls);
+    el.appendChild(resizeHandle);
+    stage.appendChild(el);
+
+    applyBubbleScale(el, scale);
+    refreshBubbleColor(el);
+
+    // Position after layout so its natural (unscaled) size is known.
+    requestAnimationFrame(() => {
+      const w = el.offsetWidth || 160;
+      const h = el.offsetHeight || 60;
+      const x = opts.x != null ? opts.x : Math.round((stage.clientWidth - w * scale) / 2);
+      const y = opts.y != null ? opts.y : Math.round((stage.clientHeight - h * scale) / 2);
+      el.style.left = x + 'px';
+      el.style.top = y + 'px';
+    });
+
+    makeBubbleInteractive(el, body, resizeHandle, textEl);
+    return el;
+  }
+
+  function makeBubbleInteractive(el, body, resizeHandle, textEl){
+    let dragging = false, resizing = false;
+    let startX = 0, startY = 0, startLeft = 0, startTop = 0, startScale = 1, startVisualW = 0;
+
+    // On a small bubble, the counter-scaled controls toolbar can visually extend
+    // well past the bubble's own (shrunk) box — see updateBubbleCounterScale.
+    // Plain CSS :hover has zero tolerance for even a brief gap while crossing
+    // that overflow, which could hide the toolbar right as the pointer reaches a
+    // button. Keeping a small "controls-open" grace period after the pointer
+    // leaves (cleared immediately if it re-enters) fixes that without weakening
+    // the normal instant-show-on-hover behavior.
+    let closeTimer = null;
+    const openControls = () => {
+      if(closeTimer){ clearTimeout(closeTimer); closeTimer = null; }
+      el.classList.add('controls-open');
+    };
+    const scheduleCloseControls = () => {
+      if(closeTimer) clearTimeout(closeTimer);
+      closeTimer = setTimeout(() => { el.classList.remove('controls-open'); closeTimer = null; }, 500);
+    };
+    el.addEventListener('pointerenter', openControls);
+    el.addEventListener('pointerleave', scheduleCloseControls);
+
+    el.addEventListener('pointerdown', (e) => {
+      if(e.target === resizeHandle || e.target.closest('.bubble-controls') || e.target === textEl || e.target.closest('.bubble-text')) return;
+      dragging = true;
+      el.classList.add('bubble-active');
+      el.style.zIndex = ++bubbleZ;
+      startX = e.clientX;
+      startY = e.clientY;
+      startLeft = parseFloat(el.style.left) || 0;
+      startTop = parseFloat(el.style.top) || 0;
+      el.setPointerCapture(e.pointerId);
+      e.stopPropagation();
+    });
+    el.addEventListener('pointermove', (e) => {
+      if(!dragging) return;
+      el.style.left = (startLeft + (e.clientX - startX)) + 'px';
+      el.style.top = (startTop + (e.clientY - startY)) + 'px';
+    });
+    el.addEventListener('pointerup', () => { dragging = false; el.classList.remove('bubble-active'); });
+    el.addEventListener('pointercancel', () => { dragging = false; el.classList.remove('bubble-active'); });
+
+    resizeHandle.addEventListener('pointerdown', (e) => {
+      resizing = true;
+      el.classList.add('bubble-active');
+      startX = e.clientX;
+      startScale = parseFloat(el.dataset.scale) || 1;
+      startVisualW = el.getBoundingClientRect().width;
+      resizeHandle.setPointerCapture(e.pointerId);
+      e.stopPropagation();
+    });
+    resizeHandle.addEventListener('pointermove', (e) => {
+      if(!resizing) return;
+      const newVisualW = Math.max(40, startVisualW + (e.clientX - startX));
+      // Floor of 0.72 keeps the 14px base text from dropping below ~10px (never under 9px).
+      const newScale = Math.max(0.72, Math.min(3, startScale * (newVisualW / (startVisualW || 1))));
+      applyBubbleScale(el, newScale);
+      e.stopPropagation();
+    });
+    resizeHandle.addEventListener('pointerup', () => { resizing = false; el.classList.remove('bubble-active'); });
+    resizeHandle.addEventListener('pointercancel', () => { resizing = false; el.classList.remove('bubble-active'); });
+  }
+
+  document.getElementById('addBubbleBtn').addEventListener('click', () => {
+    createBubble({});
+  });
+
+  // ---- Frame background color picker (controls the grid pattern AND the
+  // top title bar color, so both stay visually tied to one chosen color) ----
+  function hexToRgba(hex, alpha){
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  const frameColorInput = document.getElementById('frameColorInput');
+  const frameColorSwatch = document.getElementById('frameColorSwatch');
+  let currentFrameColor = '#A6A6A6';
+  function applyFrameColor(hex){
+    currentFrameColor = hex;
+    // Grid pattern: same color as the title bar, but much lighter (30% opacity).
+    document.documentElement.style.setProperty('--frame-grid-color', hexToRgba(hex, 0.15));
+    // Top title bar: solid version of the same color, with readable text on top.
+    document.documentElement.style.setProperty('--pair-header-color', hex);
+    document.documentElement.style.setProperty('--pair-header-text', readableTextFor(hex));
+    frameColorSwatch.style.background = hex;
+    frameColorInput.value = hex;
+  }
+  applyFrameColor(frameColorInput.value || '#A6A6A6');
+  frameColorInput.addEventListener('input', () => {
+    applyFrameColor(frameColorInput.value);
+  });
+
+  // ---- Color adjustment panel: toggle open/closed, same pattern as the size panel ----
+  const colorPanel = document.getElementById('colorPanel');
+  document.getElementById('colorSettingsBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    colorPanel.hidden = !colorPanel.hidden;
+  });
+  document.addEventListener('click', (e) => {
+    if(!colorPanel.hidden && !colorPanel.contains(e.target) && e.target.id !== 'colorSettingsBtn'){
+      colorPanel.hidden = true;
+    }
+  });
+
+  // ---- Per-slot background color (shows through until an image is placed) ----
+  const SLOT_COLOR_DEFAULT = '#F4F4F4';
+  function applySlotColor(slotKey, hex){
+    const slot = document.querySelector(`.img-slot[data-slot="${slotKey}"]`);
+    if(slot) slot.style.backgroundColor = hex;
+    const swatch = document.querySelector(`.slot-color-swatch[data-slot="${slotKey}"]`);
+    if(swatch) swatch.style.background = hex;
+  }
+  document.querySelectorAll('.slot-color-input').forEach(input => {
+    applySlotColor(input.dataset.slot, input.value || SLOT_COLOR_DEFAULT);
+    input.addEventListener('input', () => {
+      applySlotColor(input.dataset.slot, input.value);
+    });
+  });
+
+  // ---- Bulk-apply: push one chosen color to every image slot at once ----
+  const bulkColorInput = document.getElementById('bulkColorInput');
+  const bulkColorSwatch = document.getElementById('bulkColorSwatch');
+  bulkColorSwatch.style.background = bulkColorInput.value || SLOT_COLOR_DEFAULT;
+  bulkColorInput.addEventListener('input', () => {
+    bulkColorSwatch.style.background = bulkColorInput.value;
+  });
+  document.getElementById('bulkApplyBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const hex = bulkColorInput.value;
+    document.querySelectorAll('.slot-color-input').forEach(input => {
+      input.value = hex;
+      applySlotColor(input.dataset.slot, hex);
+    });
+  });
+
+  document.getElementById('colorResetBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    applyFrameColor('#A6A6A6');
+    document.querySelectorAll('.slot-color-input').forEach(input => {
+      input.value = SLOT_COLOR_DEFAULT;
+      applySlotColor(input.dataset.slot, SLOT_COLOR_DEFAULT);
+    });
+    bulkColorInput.value = SLOT_COLOR_DEFAULT;
+    bulkColorSwatch.style.background = SLOT_COLOR_DEFAULT;
+  });
+
+  // ---- Title bar background image (optional; covers the solid title-bar color).
+  // Click anywhere on the title bar EXCEPT the editable text / clear button to
+  // open the file picker; clicking the × in the corner removes it again. ----
+  const pairHeaderEl = document.getElementById('pairHeader');
+  const pairHeaderBg = document.getElementById('pairHeaderBg');
+  const pairHeaderImgEl = document.getElementById('pairHeaderImgEl');
+  const pairHeaderImageInput = document.getElementById('pairHeaderImageInput');
+  const pairHeaderImageClearBtn = document.getElementById('pairHeaderImageClearBtn');
+  let pairHeaderImageDataUrl = null;
+
+  function applyPairHeaderImage(dataUrl){
+    pairHeaderImageDataUrl = dataUrl || null;
+    if(pairHeaderImageDataUrl){
+      // The photo sits on its own blurred layer (behind the text, via negative
+      // z-index) so the blur never touches the title text itself. A separate
+      // hidden <img> keeps a clean, undistorted copy on hand for the PNG export
+      // step, since html2canvas doesn't reproduce CSS filter/blur reliably.
+      pairHeaderBg.style.backgroundImage = `url(${pairHeaderImageDataUrl})`;
+      pairHeaderImgEl.src = pairHeaderImageDataUrl;
+      pairHeaderEl.classList.add('has-bg-image');
+      pairHeaderEl.title = '클릭하여 이미지 변경';
+    }else{
+      pairHeaderBg.style.backgroundImage = '';
+      pairHeaderImgEl.src = '';
+      pairHeaderEl.classList.remove('has-bg-image');
+      pairHeaderEl.title = '클릭하여 배경 이미지 추가';
+    }
+  }
+  applyPairHeaderImage(null);
+
+  pairHeaderEl.addEventListener('click', (e) => {
+    if(e.target.closest('.editable') || e.target.closest('.clear-btn')) return;
+    pairHeaderImageInput.click();
+  });
+
+  pairHeaderImageInput.addEventListener('change', () => {
+    const file = pairHeaderImageInput.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => { applyPairHeaderImage(ev.target.result); };
+    reader.readAsDataURL(file);
+    pairHeaderImageInput.value = '';
+  });
+
+  pairHeaderImageClearBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    applyPairHeaderImage(null);
+  });
+
+  pairHeaderEl.addEventListener('dragover', (e) => { e.preventDefault(); });
+  pairHeaderEl.addEventListener('drop', (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    if(file && file.type.startsWith('image/')){
+      pairHeaderImageInput.files = e.dataTransfer.files;
+      pairHeaderImageInput.dispatchEvent(new Event('change'));
+    }
+  });
+
+
+  // ---- Save: export all text, colors, and images to a downloadable JSON file ----
+  function collectState(){
+    const editables = Array.from(document.querySelectorAll('.editable:not(.point-text)')).map(el => el.innerHTML);
+    const swatches = Array.from(document.querySelectorAll('.swatch-box input[type=color]')).map(inp => inp.value);
+    const swatchModes = Array.from(document.querySelectorAll('.swatch-box.dual-color')).map(box => box.dataset.mode || 'solid');
+    const swatchShapes = Array.from(document.querySelectorAll('.swatch-box.shape-enabled')).map(box => box.dataset.shape || 'none');
+    const badgeColors = Array.from(document.querySelectorAll('.nl-badge-color')).map(inp => inp.value);
+    const images = {};
+    const imageCrops = {};
+    document.querySelectorAll('.img-slot[data-slot]').forEach(slot => {
+      const has = slot.classList.contains('has-img');
+      images[slot.dataset.slot] = has ? (slot._dataUrl || null) : null;
+      if(has && slot._crop) imageCrops[slot.dataset.slot] = slot._crop;
+    });
+    const stickers = Array.from(document.querySelectorAll('.sticker')).map(el => ({
+      dataUrl: el.dataset.dataUrl,
+      x: parseFloat(el.style.left) || 0,
+      y: parseFloat(el.style.top) || 0,
+      width: parseFloat(el.style.width) || 0,
+      height: parseFloat(el.style.height) || 0,
+      hasBorder: el.classList.contains('has-border'),
+      locked: el.classList.contains('locked'),
+      zIndex: parseInt(el.style.zIndex) || 0
+    }));
+    const bubbles = Array.from(document.querySelectorAll('.bubble')).map(el => {
+      const t = el.querySelector('.bubble-text');
+      return {
+        // innerText (not textContent) so Alt+Enter line breaks (<br>) survive the
+        // round-trip; restored via textContent onto a white-space:pre-wrap element.
+        text: t ? (t.innerText || t.textContent || '') : '',
+        side: el.dataset.side === 'B' ? 'B' : 'A',
+        tailDir: el.dataset.tailDir === 'right' ? 'right' : 'left',
+        tailSide: el.dataset.tailSide === 'top' ? 'top' : 'bottom',
+        scale: parseFloat(el.dataset.scale) || 1,
+        x: parseFloat(el.style.left) || 0,
+        y: parseFloat(el.style.top) || 0,
+        locked: el.classList.contains('locked')
+      };
+    });
+    const sizes = {
+      squareHeight: parseFloat(squareHeightRange.value) || 300,
+      tallWidth: parseFloat(tallWidthRange.value) || 288,
+      miniSize: parseFloat(miniSizeRange.value) || 200,
+      frameColor: frameColorInput.value || '#A6A6A6',
+      pairHeaderImage: pairHeaderImageDataUrl || null
+    };
+    const slotColors = {};
+    document.querySelectorAll('.slot-color-input').forEach(input => {
+      slotColors[input.dataset.slot] = input.value;
+    });
+    const pointLists = {};
+    document.querySelectorAll('[data-list-id]').forEach(list => {
+      pointLists[list.dataset.listId] = Array.from(list.querySelectorAll('.point-text')).map(el => el.innerHTML);
+    });
+    return { type: 'character-card-maker-save', savedAt: new Date().toISOString(), editables, swatches, swatchModes, swatchShapes, badgeColors, images, imageCrops, stickers, bubbles, sizes, slotColors, pointLists };
+  }
+
+  // ---- Derive a safe filename from the 페어명 (pair name) title text ----
+  function getTitleFilename(){
+    const titleEl = document.querySelector('.nl-pair-name');
+    let text = titleEl ? titleEl.textContent.trim() : '';
+    // strip characters that aren't safe in filenames across OSes
+    text = text.replace(/[\\/:*?"<>|]/g, '').replace(/\s+/g, ' ').trim();
+    return text || 'character-card';
+  }
+
+  document.getElementById('saveBtn').addEventListener('click', async () => {
+    const saveBtn = document.getElementById('saveBtn');
+    if(saveBtn.disabled) return;
+    const originalLabel = saveBtn.textContent;
+    saveBtn.textContent = '저장 중...';
+    saveBtn.disabled = true;
+    try{
+      // Yield a frame first so the button repaints with its "saving" label before
+      // the (potentially heavy) serialization below blocks the main thread.
+      await new Promise(requestAnimationFrame);
+      const state = collectState();
+      const json = JSON.stringify(state);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = new Date().toISOString().slice(0, 10);
+      a.href = url;
+      a.download = `${getTitleFilename()}-${stamp}.json`;
+      a.click();
+      // Revoke after a tick so the download has definitely started.
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }catch(err){
+      alert('저장 중 문제가 발생했습니다. 다시 시도해주세요.');
+      console.error(err);
+    }finally{
+      saveBtn.textContent = originalLabel;
+      saveBtn.disabled = false;
+    }
+  });
+
+  // ---- Load: restore everything from a previously saved JSON file ----
+  function applyState(state){
+    if(Array.isArray(state.editables)){
+      const editableEls = document.querySelectorAll('.editable:not(.point-text)');
+      state.editables.forEach((text, i) => {
+        if(editableEls[i] && typeof text === 'string') editableEls[i].innerHTML = text;
+      });
+      document.querySelectorAll('.slot-caption').forEach(refreshSlotCaption);
+    }
+    if(Array.isArray(state.swatches)){
+      const swatchInputs = document.querySelectorAll('.swatch-box input[type=color]');
+      state.swatches.forEach((color, i) => {
+        if(swatchInputs[i] && typeof color === 'string'){
+          swatchInputs[i].value = color;
+          const box = swatchInputs[i].closest('.swatch-box');
+          // Dual-color (머리/눈) boxes get their background recomputed from mode +
+          // both colors below, once the mode array is restored — setting a flat
+          // color here first would just get overwritten a few lines down anyway.
+          if(box && !box.classList.contains('dual-color')) box.style.background = color;
+        }
+      });
+    }
+    if(Array.isArray(state.swatchModes)){
+      const dualBoxes = document.querySelectorAll('.swatch-box.dual-color');
+      state.swatchModes.forEach((mode, i) => {
+        if(dualBoxes[i] && typeof mode === 'string') dualBoxes[i].dataset.mode = mode;
+      });
+    }
+    document.querySelectorAll('.swatch-box.dual-color').forEach(box => {
+      const c1 = box.querySelector('.swatch-color-1').value;
+      const c2 = box.querySelector('.swatch-color-2').value;
+      box.style.background = computeSwatchBackground(box.dataset.mode || 'solid', c1, c2);
+    });
+    if(Array.isArray(state.swatchShapes)){
+      const shapeBoxes = document.querySelectorAll('.swatch-box.shape-enabled');
+      state.swatchShapes.forEach((shape, i) => {
+        if(shapeBoxes[i] && typeof shape === 'string') shapeBoxes[i].dataset.shape = shape;
+      });
+    }
+    document.querySelectorAll('.swatch-box.shape-enabled').forEach(box => {
+      if(box._refreshShape) box._refreshShape();
+    });
+    if(Array.isArray(state.badgeColors)){
+      const badgeInputs = document.querySelectorAll('.nl-badge-color');
+      state.badgeColors.forEach((color, i) => {
+        if(badgeInputs[i] && typeof color === 'string'){
+          badgeInputs[i].value = color;
+          const badge = badgeInputs[i].closest('.nl-badge');
+          if(badge){
+            badge.style.background = color;
+            badge.style.color = readableTextFor(color);
+            const side = badge.closest('.nl-head-a') ? 'a' : 'b';
+            applyBadgeColorToSide(side, color);
+          }
+        }
+      });
+    }
+    if(state.images && typeof state.images === 'object'){
+      const crops = state.imageCrops || {};
+      document.querySelectorAll('.img-slot[data-slot]').forEach(slot => {
+        const dataUrl = state.images[slot.dataset.slot];
+        if(dataUrl){
+          setSlotImage(slot, dataUrl, crops[slot.dataset.slot]);
+        }else{
+          clearSlotImage(slot);
+        }
+      });
+    }
+    document.querySelectorAll('.sticker').forEach(el => el.remove());
+    if(Array.isArray(state.stickers)){
+      state.stickers.forEach(s => {
+        if(s && s.dataUrl){
+          createSticker(s.dataUrl, { x: s.x, y: s.y, width: s.width, height: s.height, hasBorder: !!s.hasBorder, locked: !!s.locked, zIndex: s.zIndex });
+        }
+      });
+    }
+    document.querySelectorAll('.bubble').forEach(el => el.remove());
+    if(Array.isArray(state.bubbles)){
+      state.bubbles.forEach(b => {
+        if(b){
+          createBubble({ text: b.text, side: b.side, tailDir: b.tailDir, tailSide: b.tailSide, scale: b.scale, x: b.x, y: b.y, locked: !!b.locked });
+        }
+      });
+    }
+    if(state.pointLists && typeof state.pointLists === 'object'){
+      document.querySelectorAll('[data-list-id]').forEach(list => {
+        const items = state.pointLists[list.dataset.listId];
+        if(!Array.isArray(items)) return;
+        const textClass = list.classList.contains('mid-text-block') ? 'mid-sub-text' : 'sub-text';
+        const addBtn = list.querySelector('.add-point-btn');
+        list.querySelectorAll('.point-item').forEach(el => el.remove());
+        items.forEach(text => {
+          const row = createPointItem(text, textClass);
+          list.insertBefore(row, addBtn);
+        });
+      });
+    }
+    if(state.sizes && typeof state.sizes === 'object'){
+      if(state.sizes.squareHeight){
+        document.documentElement.style.setProperty('--square-h', state.sizes.squareHeight + 'px');
+        squareHeightRange.value = state.sizes.squareHeight;
+        squareHeightVal.textContent = state.sizes.squareHeight + 'px';
+      }
+      if(state.sizes.tallWidth){
+        document.documentElement.style.setProperty('--tall-w', state.sizes.tallWidth + 'px');
+        tallWidthRange.value = state.sizes.tallWidth;
+        tallWidthVal.textContent = state.sizes.tallWidth + 'px';
+      }
+      if(state.sizes.miniSize){
+        document.documentElement.style.setProperty('--mini-size', state.sizes.miniSize + 'px');
+        miniSizeRange.value = state.sizes.miniSize;
+        miniSizeVal.textContent = state.sizes.miniSize + 'px';
+        updateSwatchSize();
+      }
+      if(state.sizes.frameColor){
+        applyFrameColor(state.sizes.frameColor);
+      }
+      applyPairHeaderImage(state.sizes.pairHeaderImage || null);
+    }
+    if(state.slotColors && typeof state.slotColors === 'object'){
+      document.querySelectorAll('.slot-color-input').forEach(input => {
+        const hex = state.slotColors[input.dataset.slot];
+        if(typeof hex === 'string'){
+          input.value = hex;
+          applySlotColor(input.dataset.slot, hex);
+        }
+      });
+    }
+    setMiddleMerged(!!state.middleMerged);
+    updateThemeColors();
+    // Slot box dimensions may have changed via the restored size settings above;
+    // re-run each slot's render so cover/crop math uses the final box size. Deferred
+    // a frame so any setSlotImage() probes kicked off above have a chance to load.
+    requestAnimationFrame(() => rerenderAllSlots());
+  }
+
+  document.getElementById('loadBtn').addEventListener('click', () => {
+    document.getElementById('loadInput').click();
+  });
+
+  document.getElementById('loadInput').addEventListener('change', () => {
+    const input = document.getElementById('loadInput');
+    const file = input.files[0];
+    if(!file) return;
+    const loadBtn = document.getElementById('loadBtn');
+    const originalLabel = loadBtn.textContent;
+    loadBtn.textContent = '불러오는 중...';
+    loadBtn.disabled = true;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      // Defer a frame so the button's "loading" label paints before parse/apply
+      // (which can block briefly on large saves) runs on the main thread.
+      requestAnimationFrame(() => {
+        try{
+          const state = JSON.parse(ev.target.result);
+          applyState(state);
+        }catch(err){
+          alert('저장 파일을 불러오는 중 문제가 발생했습니다. 올바른 파일인지 확인해주세요.');
+          console.error(err);
+        }finally{
+          input.value = '';
+          loadBtn.textContent = originalLabel;
+          loadBtn.disabled = false;
+        }
+      });
+    };
+    reader.onerror = () => {
+      alert('파일을 읽는 중 문제가 발생했습니다. 다시 시도해주세요.');
+      input.value = '';
+      loadBtn.textContent = originalLabel;
+      loadBtn.disabled = false;
+    };
+    reader.readAsText(file);
+  });
+
+  // ---- Download as PNG ----
+  document.getElementById('downloadBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('downloadBtn');
+    const original = btn.textContent;
+    btn.textContent = '이미지 생성 중...';
+    btn.disabled = true;
+
+    document.body.classList.add('exporting');
+    document.activeElement && document.activeElement.blur();
+
+    try{
+      const stage = document.getElementById('stage');
+      const stageRect = stage.getBoundingClientRect();
+
+      // Wait for the web fonts to finish loading — if html2canvas captures before
+      // custom webfonts (Jalnan / Pretendard) are ready, it silently substitutes a fallback
+      // font, which can look mismatched/soft against the on-screen version.
+      if(document.fonts && document.fonts.ready){
+        await document.fonts.ready;
+      }
+
+      // Render at a high internal resolution first (supersampling) so text and edges
+      // stay crisp, then downscale back down to the stage's actual on-screen size —
+      // this keeps the exported PNG at the same dimensions you see in the browser.
+      // Note: foreignObjectRendering was tried here but silently produced a fully
+      // blank canvas in testing (no error thrown), so it's intentionally not used.
+      const captureScale = 3;
+      const bigCanvas = await html2canvas(stage, { scale: captureScale, backgroundColor: null, useCORS: true });
+
+      const targetWidth = Math.round(stageRect.width);
+      const targetHeight = Math.round(bigCanvas.height * (targetWidth / bigCanvas.width));
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+
+      // Pre-fill with the real background pattern first. html2canvas's scaled-down
+      // composite can leave a hairline (sub-pixel) gap at the very edge due to
+      // rounding, which otherwise shows up as a thin blank/white line — filling the
+      // correct grid pattern underneath first means that gap just blends in instead.
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const gridSizeCss = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--frame-grid-size')) || 28;
+      ctx.strokeStyle = hexToRgba(currentFrameColor, 0.15);
+      ctx.lineWidth = 1;
+      for (let x = 0; x <= canvas.width; x += gridSizeCss) {
+        ctx.beginPath();
+        ctx.moveTo(x + 0.5, 0);
+        ctx.lineTo(x + 0.5, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y <= canvas.height; y += gridSizeCss) {
+        ctx.beginPath();
+        ctx.moveTo(0, y + 0.5);
+        ctx.lineTo(canvas.width, y + 0.5);
+        ctx.stroke();
+      }
+
+      ctx.drawImage(bigCanvas, 0, 0, bigCanvas.width, bigCanvas.height, 0, 0, targetWidth, targetHeight);
+
+      // Kept for positioning math below (mapping CSS px to the final canvas's pixel grid).
+      const scaleFactor = targetWidth / stageRect.width;
+
+      // html2canvas doesn't reproduce the on-screen CSS blur() filter, so it would
+      // otherwise composite the title-bar photo in sharp — redraw that region here
+      // with a real canvas blur to match what's shown on screen.
+      if(pairHeaderImageDataUrl && pairHeaderImgEl.complete && pairHeaderImgEl.naturalWidth > 0){
+        const r = pairHeaderEl.getBoundingClientRect();
+        if(r.width > 0 && r.height > 0){
+          const boxX = (r.left - stageRect.left) * scaleFactor;
+          const boxY = (r.top - stageRect.top) * scaleFactor;
+          const boxW = r.width * scaleFactor;
+          const boxH = r.height * scaleFactor;
+
+          // Oversize the source draw well beyond the visible box (matching the
+          // on-screen layer's negative inset) before blurring. Otherwise the blur
+          // kernel samples past the edge of the drawn bitmap itself and fades
+          // toward nothing right at the box boundary, showing as a rough/torn edge
+          // instead of a clean, uniformly blurred surface.
+          const bleed = 40 * scaleFactor;
+          const targetW = boxW + bleed * 2;
+          const targetH = boxH + bleed * 2;
+          const coverScale = Math.max(targetW / pairHeaderImgEl.naturalWidth, targetH / pairHeaderImgEl.naturalHeight);
+          const dw = pairHeaderImgEl.naturalWidth * coverScale;
+          const dh = pairHeaderImgEl.naturalHeight * coverScale;
+          const dx = boxX - bleed + (targetW - dw) / 2;
+          const dy = boxY - bleed + (targetH - dh) / 2;
+
+          // Clip to the header's own rounded-top shape (13px top corners, square
+          // bottom) so the photo's corners match the on-screen card exactly,
+          // instead of a plain sharp-cornered rectangle.
+          const topRadius = Math.min(13 * scaleFactor, boxW / 2, boxH / 2);
+          ctx.save();
+          ctx.beginPath();
+          ctx.moveTo(boxX + topRadius, boxY);
+          ctx.lineTo(boxX + boxW - topRadius, boxY);
+          ctx.arcTo(boxX + boxW, boxY, boxX + boxW, boxY + topRadius, topRadius);
+          ctx.lineTo(boxX + boxW, boxY + boxH);
+          ctx.lineTo(boxX, boxY + boxH);
+          ctx.lineTo(boxX, boxY + topRadius);
+          ctx.arcTo(boxX, boxY, boxX + topRadius, boxY, topRadius);
+          ctx.closePath();
+          ctx.clip();
+          ctx.filter = `blur(${6 * scaleFactor}px)`;
+          ctx.drawImage(pairHeaderImgEl, dx, dy, dw, dh);
+          ctx.filter = 'none';
+          ctx.restore();
+        }
+      }
+
+      // html2canvas's text vertical-centering has a slight offset versus the live
+      // DOM (same quirk noted elsewhere in this file for slot captions/bubbles),
+      // and when a background photo is present the blurred-photo redraw above
+      // also paints over the 페어명/해시태그 text underneath it. Redrawing both
+      // here — unconditionally, not just when a photo is present — keeps the
+      // exported PNG pixel-accurate to the editor in every case.
+      function wrapHeaderLines(text, innerW){
+        const rawLines = text.split('\n');
+        const lines = [];
+        rawLines.forEach(raw => {
+          if(raw === ''){ lines.push(''); return; }
+          const words = raw.split(' ');
+          let cur = '';
+          words.forEach(word => {
+            const test = cur === '' ? word : cur + ' ' + word;
+            if(ctx.measureText(test).width > innerW && cur !== ''){
+              lines.push(cur);
+              cur = word;
+            }else{
+              cur = test;
+            }
+            while(ctx.measureText(cur).width > innerW && cur.length > 1){
+              let i = cur.length - 1;
+              while(i > 1 && ctx.measureText(cur.slice(0, i)).width > innerW) i--;
+              lines.push(cur.slice(0, i));
+              cur = cur.slice(i);
+            }
+          });
+          lines.push(cur);
+        });
+        return lines;
+      }
+
+      const pairHeaderHasImage = pairHeaderEl.classList.contains('has-bg-image');
+      // Used to erase html2canvas's own already-rendered text before redrawing it
+      // below — without a photo present, drawing our text directly on top of the
+      // untouched base render produced a visible double/ghosted-text artifact.
+      const pairHeaderBgColor = getComputedStyle(pairHeaderEl).backgroundColor || '#A6A6A6';
+
+      // The ✦ is a real DOM glyph, so html2canvas captures it normally in the
+      // no-photo case. But when a background photo IS present, the blurred-photo
+      // redraw above repaints the whole header box and covers it — so redraw the
+      // star here in that case only. Uses sans-serif because the heading webfont
+      // (YeogiOttaeJalnan) has no ✦ glyph.
+      if(pairHeaderHasImage){
+        const starEl = pairHeaderEl.querySelector('.pair-name-star');
+        if(starEl){
+          const sr = starEl.getBoundingClientRect();
+          if(sr.width > 0 && sr.height > 0){
+            const scs = getComputedStyle(starEl);
+            const sdx = (sr.left - stageRect.left) * scaleFactor;
+            const sdy = (sr.top - stageRect.top) * scaleFactor;
+            const sw = sr.width * scaleFactor;
+            const sh = sr.height * scaleFactor;
+            const sFontSize = parseFloat(scs.fontSize) * scaleFactor;
+            ctx.save();
+            ctx.font = `${sFontSize}px sans-serif`;
+            ctx.fillStyle = scs.color || '#FFFFFF';
+            ctx.globalAlpha = parseFloat(scs.opacity) || 0.85;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = 'rgba(0,0,0,.6)';
+            ctx.shadowBlur = 4 * scaleFactor;
+            ctx.shadowOffsetY = 1 * scaleFactor;
+            ctx.fillText('✦', sdx + sw / 2, sdy + sh / 2);
+            ctx.restore();
+          }
+        }
+      }
+
+      const nameEl = pairHeaderEl.querySelector('.nl-pair-name');
+      if(nameEl){
+        const nr = nameEl.getBoundingClientRect();
+        if(nr.width > 0 && nr.height > 0){
+          const cs = getComputedStyle(nameEl);
+          const dx2 = (nr.left - stageRect.left) * scaleFactor;
+          const dy2 = (nr.top - stageRect.top) * scaleFactor;
+          const dw2 = nr.width * scaleFactor;
+          const dh2 = nr.height * scaleFactor;
+          const fontSize = parseFloat(cs.fontSize) * scaleFactor;
+          const lineHeight = (parseFloat(cs.lineHeight) || fontSize * 1.2) * scaleFactor;
+          // Nudge the 페어명 text down ~1px (on-screen terms) so the PNG baseline
+          // matches the editor a little more closely.
+          const nameNudgeDown = 1 * scaleFactor;
+          ctx.save();
+          if(!pairHeaderHasImage){
+            // No photo redraw already happened over this area, so html2canvas's
+            // own text is still sitting there underneath — paint over it first.
+            ctx.fillStyle = pairHeaderBgColor;
+            ctx.fillRect(dx2, dy2, dw2, dh2);
+          }
+          ctx.font = `${cs.fontWeight || 'normal'} ${fontSize}px ${cs.fontFamily}`;
+          ctx.fillStyle = cs.color || '#3A3D44';
+          ctx.textAlign = 'left';
+          ctx.textBaseline = 'middle';
+          if(pairHeaderHasImage){
+            ctx.shadowColor = 'rgba(0,0,0,.6)';
+            ctx.shadowBlur = 4 * scaleFactor;
+            ctx.shadowOffsetY = 1 * scaleFactor;
+          }
+          const lines = wrapHeaderLines(nameEl.innerText || nameEl.textContent || '', dw2);
+          const totalH = lineHeight * lines.length;
+          let ty = dy2 + dh2 / 2 - totalH / 2 + lineHeight / 2 + nameNudgeDown;
+          lines.forEach(line => {
+            ctx.fillText(line, dx2, ty);
+            ty += lineHeight;
+          });
+          ctx.restore();
+        }
+      }
+
+      const hashEl = pairHeaderEl.querySelector('.nl-pair-hashtag');
+      if(hashEl){
+        const hr = hashEl.getBoundingClientRect();
+        if(hr.width > 0 && hr.height > 0){
+          const cs = getComputedStyle(hashEl);
+          const dx2 = (hr.left - stageRect.left) * scaleFactor;
+          const dy2 = (hr.top - stageRect.top) * scaleFactor;
+          const dw2 = hr.width * scaleFactor;
+          const dh2 = hr.height * scaleFactor;
+          const radius = Math.min(parseFloat(cs.borderRadius) * scaleFactor, dw2 / 2, dh2 / 2);
+          const padL = parseFloat(cs.paddingLeft) * scaleFactor;
+          const padR = parseFloat(cs.paddingRight) * scaleFactor;
+          const fontSize = parseFloat(cs.fontSize) * scaleFactor;
+          const lineHeight = (parseFloat(cs.lineHeight) || fontSize * 1.3) * scaleFactor;
+
+          ctx.save();
+          if(!pairHeaderHasImage){
+            // Same reasoning as the name redraw above: paint over html2canvas's
+            // own already-rendered hashtag text before drawing our version,
+            // otherwise the two show through each other as ghosted double text.
+            ctx.fillStyle = pairHeaderBgColor;
+            ctx.fillRect(dx2, dy2, dw2, dh2);
+          }
+          ctx.beginPath();
+          ctx.moveTo(dx2 + radius, dy2);
+          ctx.arcTo(dx2 + dw2, dy2, dx2 + dw2, dy2 + dh2, radius);
+          ctx.arcTo(dx2 + dw2, dy2 + dh2, dx2, dy2 + dh2, radius);
+          ctx.arcTo(dx2, dy2 + dh2, dx2, dy2, radius);
+          ctx.arcTo(dx2, dy2, dx2 + dw2, dy2, radius);
+          ctx.closePath();
+          ctx.fillStyle = cs.backgroundColor || 'rgba(255,255,255,.2)';
+          ctx.fill();
+
+          ctx.fillStyle = cs.color || '#FFFFFF';
+          ctx.font = `${cs.fontWeight || '600'} ${fontSize}px ${cs.fontFamily}`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          if(pairHeaderHasImage){
+            ctx.shadowColor = 'rgba(0,0,0,.6)';
+            ctx.shadowBlur = 4 * scaleFactor;
+            ctx.shadowOffsetY = 1 * scaleFactor;
+          }
+          const innerW = dw2 - padL - padR;
+          const lines = wrapHeaderLines(hashEl.innerText || hashEl.textContent || '', innerW);
+          const totalH = lineHeight * lines.length;
+          let ty = dy2 + dh2 / 2 - totalH / 2 + lineHeight / 2;
+          const tx2 = dx2 + dw2 / 2;
+          lines.forEach(line => {
+            ctx.fillText(line, tx2, ty);
+            ty += lineHeight;
+          });
+          ctx.restore();
+        }
+      }
+
+      // Redraw every uploaded photo directly from its original decoded bitmap, in one
+      // clean pass straight onto the final canvas. html2canvas's own copy has already
+      // been resampled twice (once compositing the CSS background, once in our own
+      // downscale step above), which visibly softens crisp line art — this replaces
+      // that region with a single, sharp resize straight from the source file.
+      function drawRoundedRectPath(context, x, y, w, h, r){
+        context.beginPath();
+        context.moveTo(x + r, y);
+        context.arcTo(x + w, y, x + w, y + h, r);
+        context.arcTo(x + w, y + h, x, y + h, r);
+        context.arcTo(x, y + h, x, y, r);
+        context.arcTo(x, y, x + w, y, r);
+        context.closePath();
+      }
+      document.querySelectorAll('.img-slot.has-img').forEach(slot => {
+        const img = slot._sourceImage;
+        if(!img) return;
+        if(slot.offsetParent === null) return; // skip hidden slots (merge mode)
+        const r = slot.getBoundingClientRect();
+        if(r.width === 0 || r.height === 0) return;
+        const boxX = (r.left - stageRect.left) * scaleFactor;
+        const boxY = (r.top - stageRect.top) * scaleFactor;
+        const boxW = r.width * scaleFactor;
+        const boxH = r.height * scaleFactor;
+        const cssRadius = slot.classList.contains('mini') ? 12 : 10;
+
+        ctx.save();
+        drawRoundedRectPath(ctx, boxX, boxY, boxW, boxH, cssRadius * scaleFactor);
+        ctx.clip();
+        // Note: no clearRect here before the fill — clearing first and then filling
+        // with the same anti-aliased clip mask leaves faint residual transparency at
+        // the rounded corners (each partial-coverage edge pixel gets erased and then
+        // only partially re-filled). Filling directly onto the already-opaque canvas
+        // avoids that.
+        ctx.fillStyle = getComputedStyle(slot).backgroundColor;
+        ctx.fillRect(boxX, boxY, boxW, boxH);
+
+        // The main image box also gets a subtle bottom-darkening gradient behind
+        // the photo (matching the on-screen CSS layering), so any transparent
+        // pixels in an uploaded PNG reveal the same shading here too.
+        if(slot.classList.contains('nl-main')){
+          const grad = ctx.createLinearGradient(0, boxY, 0, boxY + boxH);
+          grad.addColorStop(0, 'rgba(0,0,0,0)');
+          grad.addColorStop(1, 'rgba(0,0,0,.18)');
+          ctx.fillStyle = grad;
+          ctx.fillRect(boxX, boxY, boxW, boxH);
+        }
+
+        if(slot._crop && slot._crop.mode === 'original'){
+          const dw = img.naturalWidth * scaleFactor;
+          const dh = img.naturalHeight * scaleFactor;
+          const dx = boxX + (boxW - dw) / 2;
+          const dy = boxY + (boxH - dh) / 2;
+          ctx.drawImage(img, dx, dy, dw, dh);
+        }else if(slot._crop && slot._crop.mode === 'custom'){
+          // Mirror renderSlot()'s custom-crop math exactly. renderSlot uses the
+          // padding-box (clientWidth/Height); getBoundingClientRect is the border-box,
+          // so use clientWidth/Height here to stay pixel-consistent with the screen.
+          const cssBoxW = slot.clientWidth;
+          const cssBoxH = slot.clientHeight;
+          const coverScale = Math.max(cssBoxW / img.naturalWidth, cssBoxH / img.naturalHeight);
+          const drawScale = coverScale * (slot._crop.zoom || 1);
+          const dispW = img.naturalWidth * drawScale;
+          const dispH = img.naturalHeight * drawScale;
+          let posX = cssBoxW / 2 - slot._crop.fx * dispW;
+          let posY = cssBoxH / 2 - slot._crop.fy * dispH;
+          if(dispW >= cssBoxW){
+            posX = Math.min(0, Math.max(cssBoxW - dispW, posX));
+          }else{
+            posX = (cssBoxW - dispW) / 2;
+          }
+          if(dispH >= cssBoxH){
+            posY = Math.min(0, Math.max(cssBoxH - dispH, posY));
+          }else{
+            posY = (cssBoxH - dispH) / 2;
+          }
+          ctx.drawImage(
+            img,
+            boxX + posX * scaleFactor,
+            boxY + posY * scaleFactor,
+            dispW * scaleFactor,
+            dispH * scaleFactor
+          );
+        }else{
+          // Replicate CSS background-size:cover crop math against the box's aspect ratio.
+          const imgRatio = img.naturalWidth / img.naturalHeight;
+          const boxRatio = boxW / boxH;
+          let sx, sy, sw, sh;
+          if(imgRatio > boxRatio){
+            sh = img.naturalHeight;
+            sw = sh * boxRatio;
+            sx = (img.naturalWidth - sw) / 2;
+            sy = 0;
+          }else{
+            sw = img.naturalWidth;
+            sh = sw / boxRatio;
+            sx = 0;
+            sy = (img.naturalHeight - sh) / 2;
+          }
+          ctx.drawImage(img, sx, sy, sw, sh, boxX, boxY, boxW, boxH);
+        }
+        ctx.restore();
+      });
+
+      // The slot-caption redraw above overwrites the full image box, including the
+      // small bottom-right credit/description text. Rather than copy html2canvas's
+      // render of it (which drifts the text vertically low inside the pill on small
+      // captions), draw the pill + text directly onto the canvas with precise
+      // vertical centering.
+      document.querySelectorAll('.slot-caption.has-text').forEach(cap => {
+        if(cap.offsetParent === null) return; // hidden slot (e.g. merge mode)
+        const r = cap.getBoundingClientRect();
+        if(r.width === 0 || r.height === 0) return;
+        const cs = getComputedStyle(cap);
+
+        const dx = (r.left - stageRect.left) * scaleFactor;
+        const dy = (r.top - stageRect.top) * scaleFactor;
+        const dw = r.width * scaleFactor;
+        const dh = r.height * scaleFactor;
+
+        const radius = parseFloat(cs.borderRadius) * scaleFactor;
+        const padL = parseFloat(cs.paddingLeft) * scaleFactor;
+        const padR = parseFloat(cs.paddingRight) * scaleFactor;
+        const fontSize = parseFloat(cs.fontSize) * scaleFactor;
+        const fontWeight = cs.fontWeight || '500';
+        const fontFamily = cs.fontFamily || 'Pretendard, sans-serif';
+        const borderWidth = (parseFloat(cs.borderTopWidth) || 0) * scaleFactor;
+
+        // Rounded-rect pill background.
+        ctx.save();
+        ctx.beginPath();
+        const rr = Math.min(radius, dw / 2, dh / 2);
+        ctx.moveTo(dx + rr, dy);
+        ctx.arcTo(dx + dw, dy, dx + dw, dy + dh, rr);
+        ctx.arcTo(dx + dw, dy + dh, dx, dy + dh, rr);
+        ctx.arcTo(dx, dy + dh, dx, dy, rr);
+        ctx.arcTo(dx, dy, dx + dw, dy, rr);
+        ctx.closePath();
+        ctx.fillStyle = cs.backgroundColor || 'rgba(0,0,0,.55)';
+        ctx.fill();
+
+        // Some captions (e.g. the bottom-center commission-source pill) also have
+        // a visible border. Draw it ourselves too — html2canvas's own border-radius
+        // rendering doesn't align pixel-for-pixel with the fill path above, and
+        // relying on its copy left ragged leftover fragments peeking out at the
+        // edges once the fill was painted on top.
+        if(borderWidth > 0){
+          const inset = borderWidth / 2;
+          const irr = Math.max(rr - inset, 0);
+          ctx.beginPath();
+          ctx.moveTo(dx + inset + irr, dy + inset);
+          ctx.arcTo(dx + dw - inset, dy + inset, dx + dw - inset, dy + dh - inset, irr);
+          ctx.arcTo(dx + dw - inset, dy + dh - inset, dx + inset, dy + dh - inset, irr);
+          ctx.arcTo(dx + inset, dy + dh - inset, dx + inset, dy + inset, irr);
+          ctx.arcTo(dx + inset, dy + inset, dx + dw - inset, dy + inset, irr);
+          ctx.closePath();
+          ctx.lineWidth = borderWidth;
+          ctx.strokeStyle = cs.borderTopColor || '#C4C4C4';
+          ctx.stroke();
+        }
+
+        // Text, vertically centered and wrapped to the same width. Alignment
+        // follows the element's own CSS text-align — most slot captions are
+        // right-aligned, but the bottom-center commission-source pill is centered.
+        const textAlign = cs.textAlign === 'center' ? 'center' : (cs.textAlign === 'left' ? 'left' : 'right');
+        ctx.fillStyle = cs.color || '#fff';
+        ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+        ctx.textAlign = textAlign;
+        ctx.textBaseline = 'middle';
+        const lineHeight = parseFloat(cs.lineHeight) * scaleFactor || fontSize * 1.35;
+        const innerW = dw - padL - padR;
+        const rawLines = (cap.innerText || cap.textContent || '').split('\n');
+        const lines = [];
+        rawLines.forEach(raw => {
+          if(raw === ''){ lines.push(''); return; }
+          // Word-first wrap (mirrors CSS word-break:break-word) — see the matching
+          // fix/comment in the speech-bubble export block for the reasoning.
+          const words = raw.split(' ');
+          let cur = '';
+          words.forEach(word => {
+            const test = cur === '' ? word : cur + ' ' + word;
+            if(ctx.measureText(test).width > innerW && cur !== ''){
+              lines.push(cur);
+              cur = word;
+            }else{
+              cur = test;
+            }
+            while(ctx.measureText(cur).width > innerW && cur.length > 1){
+              let i = cur.length - 1;
+              while(i > 1 && ctx.measureText(cur.slice(0, i)).width > innerW) i--;
+              lines.push(cur.slice(0, i));
+              cur = cur.slice(i);
+            }
+          });
+          lines.push(cur);
+        });
+        const totalTextH = lineHeight * lines.length;
+        let ty = dy + dh / 2 - totalTextH / 2 + lineHeight / 2;
+        const tx = textAlign === 'center' ? dx + dw / 2 : (textAlign === 'left' ? dx + padL : dx + dw - padR);
+        lines.forEach(line => {
+          ctx.fillText(line, tx, ty);
+          ty += lineHeight;
+        });
+        ctx.restore();
+      });
+
+      // html2canvas doesn't reliably rasterize inline SVG (the shape icon on the
+      // 눈 color chip kept landing in the wrong spot / wrong size), so draw the
+      // selected eye shape directly on the canvas instead — geometry here mirrors
+      // shapeIconMarkup()'s 24×24 viewBox definitions exactly.
+      document.querySelectorAll('.swatch-box.has-shape').forEach(box => {
+        const shape = box.dataset.shape;
+        if(!shape || shape === 'none') return;
+        const r = box.getBoundingClientRect();
+        if(r.width === 0 || r.height === 0) return;
+        const color2 = box.querySelector('.swatch-color-2');
+        const fillColor = color2 ? color2.value : '#4D4D4D';
+
+        // Same 9px CSS inset on all sides, mapped into canvas px, then a further
+        // 24-unit-viewBox -> canvas-px scale for the shape geometry itself.
+        const boxX = (r.left - stageRect.left) * scaleFactor;
+        const boxY = (r.top - stageRect.top) * scaleFactor;
+        const inset = 9 * scaleFactor;
+        const innerX = boxX + inset;
+        const innerY = boxY + inset;
+        const innerSize = (r.width * scaleFactor) - inset * 2;
+        const s = innerSize / 24; // viewBox units -> canvas px
+
+        ctx.save();
+        ctx.translate(innerX, innerY);
+        ctx.scale(s, s);
+        ctx.fillStyle = fillColor;
+        ctx.strokeStyle = fillColor;
+
+        if(shape === 'square'){
+          const rr = 3;
+          ctx.beginPath();
+          ctx.moveTo(rr, 0);
+          ctx.lineTo(24 - rr, 0);
+          ctx.arcTo(24, 0, 24, rr, rr);
+          ctx.lineTo(24, 24 - rr);
+          ctx.arcTo(24, 24, 24 - rr, 24, rr);
+          ctx.lineTo(rr, 24);
+          ctx.arcTo(0, 24, 0, 24 - rr, rr);
+          ctx.lineTo(0, rr);
+          ctx.arcTo(0, 0, rr, 0, rr);
+          ctx.closePath();
+          ctx.fill();
+        }else if(shape === 'circle'){
+          ctx.beginPath();
+          ctx.arc(12, 12, 9, 0, Math.PI * 2);
+          ctx.fill();
+        }else if(shape === 'diamond'){
+          ctx.beginPath();
+          ctx.moveTo(12, 0);
+          ctx.lineTo(24, 12);
+          ctx.lineTo(12, 24);
+          ctx.lineTo(0, 12);
+          ctx.closePath();
+          ctx.fill();
+        }else if(shape === 'capsule-v'){
+          ctx.beginPath();
+          ctx.ellipse(12, 12, 4, 11, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }else if(shape === 'capsule-h'){
+          ctx.beginPath();
+          ctx.ellipse(12, 12, 11, 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+        }else if(shape === 'ring'){
+          ctx.lineWidth = 1.8;
+          ctx.beginPath();
+          ctx.arc(12, 12, 9, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(12, 12, 3.8, 0, Math.PI * 2);
+          ctx.fill();
+        }else if(shape === 'heart'){
+          ctx.beginPath();
+          ctx.moveTo(12, 20.5);
+          ctx.bezierCurveTo(8.5, 17.9, 4, 13.9, 4, 9.5);
+          ctx.bezierCurveTo(4, 6.7, 6.2, 4.5, 9, 4.5);
+          ctx.bezierCurveTo(10.1, 4.5, 11.3, 5.1, 12, 6.4);
+          ctx.bezierCurveTo(12.7, 5.1, 13.9, 4.5, 15, 4.5);
+          ctx.bezierCurveTo(17.8, 4.5, 20, 6.7, 20, 9.5);
+          ctx.bezierCurveTo(20, 13.9, 15.5, 17.9, 12, 20.5);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+      });
+
+      // Stickers are redrawn last, on top of everything else (including the sharp
+      // image-slot redraw above), because that slot redraw paints fresh pixels over
+      // its own box — if a sticker happened to overlap a slot, it would otherwise get
+      // painted over and end up looking like it was "under" the slot in the PNG even
+      // though it's on top on screen.
+      //
+      // The white border toggle is a CSS drop-shadow filter on-screen, but this whole
+      // block redraws stickers straight from the raw <img> pixels (bypassing CSS
+      // filters entirely), so the border has to be reproduced manually here: paint a
+      // white alpha-silhouette of the sticker offset in a ring of directions (the same
+      // trick the CSS multi-drop-shadow uses), then draw the real image on top.
+      function drawStickerBorder(silhouette, cx, cy, w, h, radius){
+        const steps = 16;
+        for(let i = 0; i < steps; i++){
+          const angle = (i / steps) * Math.PI * 2;
+          const dx = Math.cos(angle) * radius;
+          const dy = Math.sin(angle) * radius;
+          ctx.drawImage(silhouette, cx + dx, cy + dy, w, h);
+        }
+      }
+      Array.from(document.querySelectorAll('.sticker'))
+        .sort((a, b) => (parseInt(a.style.zIndex) || 0) - (parseInt(b.style.zIndex) || 0))
+        .forEach(el => {
+          const img = el.querySelector('img');
+          if(!img) return;
+          const r = el.getBoundingClientRect();
+          const boxX = (r.left - stageRect.left) * scaleFactor;
+          const boxY = (r.top - stageRect.top) * scaleFactor;
+          const boxW = r.width * scaleFactor;
+          const boxH = r.height * scaleFactor;
+          if(el.classList.contains('has-border') && boxW > 0 && boxH > 0){
+            const silhouetteCanvas = document.createElement('canvas');
+            silhouetteCanvas.width = Math.round(boxW);
+            silhouetteCanvas.height = Math.round(boxH);
+            const sctx = silhouetteCanvas.getContext('2d');
+            sctx.drawImage(img, 0, 0, boxW, boxH);
+            sctx.globalCompositeOperation = 'source-in';
+            sctx.fillStyle = '#fff';
+            sctx.fillRect(0, 0, boxW, boxH);
+            drawStickerBorder(silhouetteCanvas, boxX, boxY, boxW, boxH, 1 * scaleFactor);
+          }
+          ctx.drawImage(img, boxX, boxY, boxW, boxH);
+        });
+
+      // Speech bubbles are drawn manually (rounded body + tail + wrapped text)
+      // rather than captured via html2canvas, for the same reason the slot
+      // captions are: avoids html2canvas's text vertical-position quirk entirely.
+      // Drawn after stickers so bubbles sit on top, matching their on-screen z-order.
+      Array.from(document.querySelectorAll('.bubble'))
+        .sort((a, b) => (parseInt(a.style.zIndex) || 0) - (parseInt(b.style.zIndex) || 0))
+        .forEach(el => {
+          // Measure the .bubble-body itself, not the outer .bubble wrapper — the
+          // wrapper's box also includes the header padding reserved for the edit
+          // controls, and using its full rect here previously made the exported
+          // bubble taller (stretched) than what's shown on screen.
+          const bodyEl = el.querySelector('.bubble-body');
+          const r = (bodyEl || el).getBoundingClientRect();
+          if(r.width === 0 || r.height === 0) return;
+          const scale = parseFloat(el.dataset.scale) || 1;
+          const side = el.dataset.side === 'B' ? 'B' : 'A';
+          const tailDir = el.dataset.tailDir === 'right' ? 'right' : 'left';
+          const tailSide = el.dataset.tailSide === 'top' ? 'top' : 'bottom';
+          const color = getThemeColor(side);
+          const textColor = readableTextFor(color);
+          const textEl = el.querySelector('.bubble-text');
+          const text = textEl ? (textEl.innerText || textEl.textContent || '') : '';
+
+          const bodyX = (r.left - stageRect.left) * scaleFactor;
+          const bodyY = (r.top - stageRect.top) * scaleFactor;
+          const bodyW = r.width * scaleFactor;
+          const bodyH = r.height * scaleFactor;
+          const radius = Math.min(16 * scale * scaleFactor, bodyW / 2, bodyH / 2);
+
+          // Tail geometry. The base overlaps ~4px into the body (the apex sticks
+          // out ~8px), mirroring the CSS, so the two fills merge with no seam.
+          const tailW = 18 * scale * scaleFactor;
+          const tailH = 12 * scale * scaleFactor;
+          const tailOverlap = 4 * scale * scaleFactor;
+          const sideOffset = 22 * scale * scaleFactor;
+          const tailCenterX = tailDir === 'left'
+            ? (bodyX + sideOffset + tailW / 2)
+            : (bodyX + bodyW - sideOffset - tailW / 2);
+          const tailBaseY = tailSide === 'top'
+            ? bodyY + tailOverlap
+            : bodyY + bodyH - tailOverlap;
+          const tailTipY = tailSide === 'top'
+            ? bodyY - (tailH - tailOverlap)
+            : bodyY + bodyH + (tailH - tailOverlap);
+
+          // Draw the rounded body and the tail as ONE compound path, filled a
+          // single time with the shadow enabled. That way the shadow is cast by
+          // the combined silhouette (body + tail) — exactly like the CSS
+          // drop-shadow — instead of the tail casting a shadow onto the body.
+          ctx.save();
+          ctx.shadowColor = 'rgba(0,0,0,0.22)';
+          ctx.shadowBlur = 6 * scale * scaleFactor;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 3 * scale * scaleFactor;
+          ctx.beginPath();
+          // Rounded-rect body subpath.
+          ctx.moveTo(bodyX + radius, bodyY);
+          ctx.arcTo(bodyX + bodyW, bodyY, bodyX + bodyW, bodyY + bodyH, radius);
+          ctx.arcTo(bodyX + bodyW, bodyY + bodyH, bodyX, bodyY + bodyH, radius);
+          ctx.arcTo(bodyX, bodyY + bodyH, bodyX, bodyY, radius);
+          ctx.arcTo(bodyX, bodyY, bodyX + bodyW, bodyY, radius);
+          ctx.closePath();
+          // Tail triangle subpath (same path object → filled as one shape).
+          ctx.moveTo(tailCenterX - tailW / 2, tailBaseY);
+          ctx.lineTo(tailCenterX + tailW / 2, tailBaseY);
+          ctx.lineTo(tailCenterX, tailTipY);
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.restore();
+
+          // Wrapped, centered text.
+          ctx.save();
+          ctx.fillStyle = textColor;
+          const fontSize = 14 * scale * scaleFactor;
+          ctx.font = `600 ${fontSize}px 'Pretendard', sans-serif`;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          const padX = 16 * scale * scaleFactor;
+          const innerW = Math.max(1, bodyW - padX * 2);
+          const lineHeight = 20 * scale * scaleFactor;
+          const rawLines = text.split('\n');
+          const lines = [];
+          rawLines.forEach(raw => {
+            if(raw === ''){ lines.push(''); return; }
+            // Word-first wrap (mirrors CSS word-break:break-word): break at spaces
+            // when possible, only falling back to a mid-word character split when a
+            // single word alone is wider than the line. A plain character-by-character
+            // wrap (the previous approach) produced a different line count than the
+            // real browser rendering for any text containing spaces, which is what
+            // threw off the vertical centering.
+            const words = raw.split(' ');
+            let cur = '';
+            words.forEach(word => {
+              const test = cur === '' ? word : cur + ' ' + word;
+              if(ctx.measureText(test).width > innerW && cur !== ''){
+                lines.push(cur);
+                cur = word;
+              }else{
+                cur = test;
+              }
+              while(ctx.measureText(cur).width > innerW && cur.length > 1){
+                let i = cur.length - 1;
+                while(i > 1 && ctx.measureText(cur.slice(0, i)).width > innerW) i--;
+                lines.push(cur.slice(0, i));
+                cur = cur.slice(i);
+              }
+            });
+            lines.push(cur);
+          });
+          const totalTextH = lineHeight * lines.length;
+          // Nudge the text down by ~1px (in on-screen terms; scaleFactor = 1 CSS px
+          // in the high-res export space) so the PNG baseline matches the editor.
+          const textNudgeDown = 1 * scaleFactor;
+          let ty = bodyY + bodyH / 2 - totalTextH / 2 + lineHeight / 2 + textNudgeDown;
+          const tx = bodyX + bodyW / 2;
+          lines.forEach(line => {
+            ctx.fillText(line, tx, ty);
+            ty += lineHeight;
+          });
+          ctx.restore();
+        });
+
+      // Crop the whole exported PNG to the same rounded-rect silhouette as the
+      // on-screen card (instead of a plain square-cornered image), leaving the
+      // four corners transparent. Applied last, after every layer (grid, photos,
+      // stickers, bubbles, text) has been drawn, so it simply trims the corners
+      // off the finished composite rather than needing every draw call above to
+      // be individually clipped.
+      (function maskToRoundedCard(){
+        const cardRadius = Math.min(14 * scaleFactor, canvas.width / 2, canvas.height / 2);
+        ctx.save();
+        ctx.globalCompositeOperation = 'destination-in';
+        ctx.beginPath();
+        ctx.moveTo(cardRadius, 0);
+        ctx.lineTo(canvas.width - cardRadius, 0);
+        ctx.arcTo(canvas.width, 0, canvas.width, cardRadius, cardRadius);
+        ctx.lineTo(canvas.width, canvas.height - cardRadius);
+        ctx.arcTo(canvas.width, canvas.height, canvas.width - cardRadius, canvas.height, cardRadius);
+        ctx.lineTo(cardRadius, canvas.height);
+        ctx.arcTo(0, canvas.height, 0, canvas.height - cardRadius, cardRadius);
+        ctx.lineTo(0, cardRadius);
+        ctx.arcTo(0, 0, cardRadius, 0, cardRadius);
+        ctx.closePath();
+        ctx.fillStyle = '#000';
+        ctx.fill();
+        ctx.restore();
+      })();
+
+      // Sanity check: make sure the render actually produced content (catches a case
+      // like the foreignObjectRendering mode, which silently returned a blank canvas
+      // without throwing an error).
+      const sample = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      let nonWhitePixels = 0;
+      for(let i = 0; i < sample.length; i += 4 * 97){ // sparse sample for speed
+        if(sample[i] < 250 || sample[i+1] < 250 || sample[i+2] < 250 || sample[i+3] < 250){
+          nonWhitePixels++;
+          if(nonWhitePixels > 5) break;
+        }
+      }
+      if(nonWhitePixels <= 5){
+        throw new Error('렌더링된 이미지가 비어있습니다.');
+      }
+
+      const link = document.createElement('a');
+      link.download = `${getTitleFilename()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }catch(err){
+      alert('이미지를 만드는 중 문제가 발생했습니다. 다시 시도해주세요.');
+      console.error(err);
+    }finally{
+      document.body.classList.remove('exporting');
+      btn.textContent = original;
+      btn.disabled = false;
+    }
+  });
+
+  // ---- Autosave: periodically snapshot the current state to the browser's
+  // local storage, and offer to restore it the next time the page is opened
+  // (e.g. after an accidental reload/tab close). This is separate from the
+  // explicit "저장" JSON download — it's a safety net, not a replacement. ----
+  const AUTOSAVE_KEY = 'ranteu-pairtle-maker-autosave-v1';
+  let autosaveTimer = null;
+  function scheduleAutosave(){
+    if(autosaveTimer) clearTimeout(autosaveTimer);
+    autosaveTimer = setTimeout(() => {
+      try{
+        const state = collectState();
+        localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(state));
+      }catch(err){
+        // Most likely quota exceeded — this app stores full-resolution photos as
+        // base64, which can add up past localStorage's ~5-10MB limit. Silently
+        // skip; the explicit "저장" (JSON download) button remains unaffected
+        // and is the reliable way to back up large files.
+        console.warn('자동 저장 실패 (용량 초과 등):', err);
+      }
+    }, 1500);
+  }
+  // Broad, delegated listeners rather than wiring every individual control —
+  // virtually every state change in this app originates from one of these three
+  // event types bubbling up through the document.
+  document.addEventListener('input', scheduleAutosave, true);
+  document.addEventListener('change', scheduleAutosave, true);
+  document.addEventListener('click', scheduleAutosave, true);
+  // Drag/resize of stickers and bubbles happens via pointer events, which none
+  // of the three above cover — capture pointerup too so a moved/resized element's
+  // new position or size is snapshotted once the gesture ends.
+  document.addEventListener('pointerup', scheduleAutosave, true);
+
+  // Offer to restore once, right after the page finishes loading.
+  (function offerAutosaveRestore(){
+    let raw;
+    try{
+      raw = localStorage.getItem(AUTOSAVE_KEY);
+    }catch(err){
+      return; // localStorage unavailable (privacy mode, etc.) — skip quietly
+    }
+    if(!raw) return;
+    try{
+      const state = JSON.parse(raw);
+
+      // Skip the prompt for a snapshot that's effectively still the blank
+      // default (nothing uploaded or added) — only images/stickers/bubbles are
+      // checked, since text fields already start pre-filled with placeholder
+      // copy ("페어명", "이름" 등) that isn't itself a sign of real editing.
+      const hasImages = !!(state.images && Object.values(state.images).some(v => !!v));
+      const hasStickers = Array.isArray(state.stickers) && state.stickers.length > 0;
+      const hasBubbles = Array.isArray(state.bubbles) && state.bubbles.length > 0;
+      if(!hasImages && !hasStickers && !hasBubbles){
+        try{ localStorage.removeItem(AUTOSAVE_KEY); }catch(err){}
+        return;
+      }
+
+      let whenText = '';
+      if(state.savedAt){
+        const when = new Date(state.savedAt);
+        if(!Number.isNaN(when.getTime())) whenText = ` (${when.toLocaleString('ko-KR')} 기준)`;
+      }
+      if(confirm(`이전에 작업하던 내용이 남아있습니다${whenText}. 불러올까요?\n\n(취소를 누르면 지금 화면 그대로 새로 시작합니다)`)){
+        applyState(state);
+      }
+    }catch(err){
+      console.warn('자동 저장된 데이터를 불러오는 중 문제가 발생했습니다.', err);
+    }
+  })();
+</script>
+
+</body>
+</html>
