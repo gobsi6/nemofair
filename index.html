@@ -721,6 +721,24 @@
     opacity:.75;
   }
   body.exporting .img-slot .slot-caption:not(.has-text){ display:none; }
+  /* The mouse is very often still hovering the image slot at the exact moment
+     the download button is clicked. Normally that's harmless, but the hover
+     rules above shift the caption pill's own `bottom` offset upward (to clear
+     space for hover-only controls), and getBoundingClientRect() picks up
+     whatever position is in effect *right then* — so an export triggered while
+     hovering would capture the pill floating higher than its real resting spot.
+     Since every hover-only control is already hidden during export anyway,
+     force the pill back to its resting offset unconditionally here. */
+  body.exporting .img-slot:hover .slot-caption,
+  body.exporting .img-slot .slot-caption:focus{
+    bottom:8px !important;
+  }
+  body.exporting .img-slot.mini:hover .slot-caption,
+  body.exporting .img-slot.mini .slot-caption:focus,
+  body.exporting .nl-cell:hover .slot-caption,
+  body.exporting .nl-cell .slot-caption:focus{
+    bottom:5px !important;
+  }
 
   /* ---------- Swatch row ---------- */
   .swatch-row{
@@ -1220,6 +1238,44 @@
     pointer-events:none;
     transition:opacity .12s ease;
   }
+  .sticker-rotate{
+    position:absolute;
+    bottom:-26px; left:50%;
+    transform:translateX(-50%);
+    width:24px; height:24px;
+    border-radius:50%;
+    background:var(--accent);
+    border:2px solid #fff;
+    box-shadow:0 1px 3px rgba(0,0,0,.3);
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:grab;
+    z-index:2;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .12s ease;
+    touch-action:none;
+  }
+  .sticker-rotate:active{ cursor:grabbing; }
+  /* Invisible strip bridging the gap between the sticker's own box and the
+     rotate handle floating below it. Without this, the cursor briefly leaves
+     every part of the sticker while crossing that gap, :hover drops, and the
+     handle (pointer-events:none while hidden) becomes unreachable before the
+     cursor ever arrives — it looks like the button vanishes mid-approach.
+     This strip keeps hover engaged continuously across the crossing. */
+  .sticker::before{
+    content:'';
+    position:absolute;
+    left:50%;
+    bottom:-26px;
+    width:44px;
+    height:26px;
+    transform:translateX(-50%);
+    pointer-events:auto;
+  }
+  .sticker.locked::before{ pointer-events:none; }
   .sticker-border-toggle{
     position:absolute;
     top:-12px; left:-12px;
@@ -1278,11 +1334,13 @@
   }
   .sticker:hover .sticker-delete,
   .sticker:hover .sticker-resize,
+  .sticker:hover .sticker-rotate,
   .sticker:hover .sticker-border-toggle,
   .sticker:hover .sticker-lock-btn,
   .sticker:hover .sticker-back-btn,
   .sticker.sticker-active .sticker-delete,
   .sticker.sticker-active .sticker-resize,
+  .sticker.sticker-active .sticker-rotate,
   .sticker.sticker-active .sticker-border-toggle,
   .sticker.sticker-active .sticker-lock-btn,
   .sticker.sticker-active .sticker-back-btn{
@@ -1303,6 +1361,7 @@
   }
   .sticker.locked .sticker-delete,
   .sticker.locked .sticker-resize,
+  .sticker.locked .sticker-rotate,
   .sticker.locked .sticker-border-toggle,
   .sticker.locked .sticker-back-btn{
     display:none;
@@ -1310,6 +1369,7 @@
   body.exporting .sticker{ outline:none; }
   body.exporting .sticker-delete,
   body.exporting .sticker-resize,
+  body.exporting .sticker-rotate,
   body.exporting .sticker-border-toggle,
   body.exporting .sticker-lock-btn,
   body.exporting .sticker-back-btn{ display:none !important; }
@@ -2641,7 +2701,12 @@
   const sizePanel = document.getElementById('sizePanel');
   document.getElementById('sizeSettingsBtn').addEventListener('click', (e) => {
     e.stopPropagation();
+    const opening = sizePanel.hidden;
     sizePanel.hidden = !sizePanel.hidden;
+    // Both panels anchor to roughly the same top-right area, so leaving the other
+    // one open at the same time made them visually overlap. Opening this one
+    // always closes the other.
+    if(opening) colorPanel.hidden = true;
   });
   document.addEventListener('click', (e) => {
     if(!sizePanel.hidden && !sizePanel.contains(e.target) && e.target.id !== 'sizeSettingsBtn'){
@@ -2912,6 +2977,7 @@
   const ICON_SEND_BACK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="15" height="15"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 1 1 0 10H9"/></svg>';
   const ICON_FLIP_H = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M7 8 3 12l4 4"/><path d="M3 12h18"/><path d="M17 8l4 4-4 4"/></svg>';
   const ICON_FLIP_V = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="13" height="13"><path d="M8 7 12 3l4 4"/><path d="M12 3v18"/><path d="M8 17l4 4 4-4"/></svg>';
+  const ICON_ROTATE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/></svg>';
 
   let stickerZ = 100;
 
@@ -2948,6 +3014,9 @@
         el.style.zIndex = ++stickerZ;
       }
       el.dataset.dataUrl = dataUrl;
+      const rotation = typeof opts.rotation === 'number' && !Number.isNaN(opts.rotation) ? opts.rotation : 0;
+      el.dataset.rotation = rotation;
+      if(rotation) el.style.transform = 'rotate(' + rotation + 'deg)';
 
       const img = document.createElement('img');
       img.src = dataUrl;
@@ -2965,6 +3034,17 @@
       resizeHandle.className = 'sticker-resize';
       resizeHandle.title = '드래그해서 크기 조절';
       el.appendChild(resizeHandle);
+
+      const rotateHandle = document.createElement('div');
+      rotateHandle.className = 'sticker-rotate';
+      rotateHandle.title = '드래그해서 회전 (더블클릭: 초기화)';
+      rotateHandle.innerHTML = ICON_ROTATE;
+      rotateHandle.addEventListener('dblclick', (e) => {
+        e.stopPropagation();
+        el.dataset.rotation = 0;
+        el.style.transform = 'rotate(0deg)';
+      });
+      el.appendChild(rotateHandle);
 
       const borderToggle = document.createElement('div');
       borderToggle.className = 'sticker-border-toggle';
@@ -3005,14 +3085,15 @@
       el.appendChild(backBtn);
 
       stage.appendChild(el);
-      makeStickerInteractive(el, resizeHandle);
+      makeStickerInteractive(el, resizeHandle, rotateHandle);
     };
     probe.src = dataUrl;
   }
 
-  function makeStickerInteractive(el, resizeHandle){
-    let dragging = false, resizing = false;
+  function makeStickerInteractive(el, resizeHandle, rotateHandle){
+    let dragging = false, resizing = false, rotating = false;
     let startX = 0, startY = 0, startLeft = 0, startTop = 0, startW = 0, startH = 0;
+    let startAngle = 0, startRotation = 0;
 
     el.addEventListener('pointerdown', (e) => {
       if(e.target === resizeHandle || e.target.closest('.sticker-delete') || e.target.closest('.sticker-border-toggle') || e.target.closest('.sticker-lock-btn') || e.target.closest('.sticker-back-btn')) return;
@@ -3046,13 +3127,49 @@
     });
     resizeHandle.addEventListener('pointermove', (e) => {
       if(!resizing) return;
-      const scale = Math.max(0.2, (startW + (e.clientX - startX)) / startW);
+      // Rotate the raw screen-space drag delta into the sticker's own (unrotated)
+      // coordinate frame, so dragging "along" the corner still grows the sticker
+      // correctly even when it's been rotated — otherwise resizing a rotated
+      // sticker by dragging right on screen would grow it in the wrong direction.
+      const angleRad = ((parseFloat(el.dataset.rotation) || 0) * Math.PI) / 180;
+      const dx = e.clientX - startX, dy = e.clientY - startY;
+      const localDx = dx * Math.cos(angleRad) + dy * Math.sin(angleRad);
+      const scale = Math.max(0.2, (startW + localDx) / startW);
       el.style.width = Math.max(30, Math.round(startW * scale)) + 'px';
       el.style.height = Math.max(30, Math.round(startH * scale)) + 'px';
       e.stopPropagation();
     });
     resizeHandle.addEventListener('pointerup', () => { resizing = false; el.classList.remove('sticker-active'); });
     resizeHandle.addEventListener('pointercancel', () => { resizing = false; el.classList.remove('sticker-active'); });
+
+    if(rotateHandle){
+      rotateHandle.addEventListener('pointerdown', (e) => {
+        rotating = true;
+        el.classList.add('sticker-active');
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        startAngle = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+        startRotation = parseFloat(el.dataset.rotation) || 0;
+        rotateHandle.setPointerCapture(e.pointerId);
+        e.stopPropagation();
+      });
+      rotateHandle.addEventListener('pointermove', (e) => {
+        if(!rotating) return;
+        const rect = el.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const angle = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI;
+        let newRotation = startRotation + (angle - startAngle);
+        // Shift-drag snaps to 15° steps, for lining sticker edges up cleanly.
+        if(e.shiftKey) newRotation = Math.round(newRotation / 15) * 15;
+        el.dataset.rotation = newRotation;
+        el.style.transform = 'rotate(' + newRotation + 'deg)';
+        e.stopPropagation();
+      });
+      rotateHandle.addEventListener('pointerup', () => { rotating = false; el.classList.remove('sticker-active'); });
+      rotateHandle.addEventListener('pointercancel', () => { rotating = false; el.classList.remove('sticker-active'); });
+    }
   }
 
   document.getElementById('addStickerBtn').addEventListener('click', () => {
@@ -3361,7 +3478,9 @@
   const colorPanel = document.getElementById('colorPanel');
   document.getElementById('colorSettingsBtn').addEventListener('click', (e) => {
     e.stopPropagation();
+    const opening = colorPanel.hidden;
     colorPanel.hidden = !colorPanel.hidden;
+    if(opening) sizePanel.hidden = true;
   });
   document.addEventListener('click', (e) => {
     if(!colorPanel.hidden && !colorPanel.contains(e.target) && e.target.id !== 'colorSettingsBtn'){
@@ -3493,7 +3612,8 @@
       height: parseFloat(el.style.height) || 0,
       hasBorder: el.classList.contains('has-border'),
       locked: el.classList.contains('locked'),
-      zIndex: parseInt(el.style.zIndex) || 0
+      zIndex: parseInt(el.style.zIndex) || 0,
+      rotation: parseFloat(el.dataset.rotation) || 0
     }));
     const bubbles = Array.from(document.querySelectorAll('.bubble')).map(el => {
       const t = el.querySelector('.bubble-text');
@@ -3639,7 +3759,7 @@
     if(Array.isArray(state.stickers)){
       state.stickers.forEach(s => {
         if(s && s.dataUrl){
-          createSticker(s.dataUrl, { x: s.x, y: s.y, width: s.width, height: s.height, hasBorder: !!s.hasBorder, locked: !!s.locked, zIndex: s.zIndex });
+          createSticker(s.dataUrl, { x: s.x, y: s.y, width: s.width, height: s.height, hasBorder: !!s.hasBorder, locked: !!s.locked, zIndex: s.zIndex, rotation: typeof s.rotation === 'number' ? s.rotation : 0 });
         }
       });
     }
@@ -3754,7 +3874,6 @@
 
     try{
       const stage = document.getElementById('stage');
-      const stageRect = stage.getBoundingClientRect();
 
       // Wait for the web fonts to finish loading — if html2canvas captures before
       // custom webfonts (Jalnan / Pretendard) are ready, it silently substitutes a fallback
@@ -3762,6 +3881,16 @@
       if(document.fonts && document.fonts.ready){
         await document.fonts.ready;
       }
+
+      // stageRect is measured AFTER the font wait above, not before. Web fonts
+      // finishing late can reflow text (line-wrap counts, pill/box heights), which
+      // shifts elements' positions relative to the stage. Every manual overlay drawn
+      // below (commission-source pill, eye shape icon, stickers, bubbles) locates
+      // itself as an offset from stageRect, so if stageRect were captured too early
+      // it would go stale the moment such a reflow happens — and everything drawn
+      // from it would land shifted (this is what caused the caption pill drifting
+      // upward / the eye shape occasionally landing in the wrong place).
+      const stageRect = stage.getBoundingClientRect();
 
       // Render at a high internal resolution first (supersampling) so text and edges
       // stay crisp, then downscale back down to the stage's actual on-screen size —
@@ -4337,11 +4466,23 @@
         .forEach(el => {
           const img = el.querySelector('img');
           if(!img) return;
+          // getBoundingClientRect() gives the axis-aligned bounding box, which is
+          // wrong for a rotated element's own width/height — but its center point
+          // is invariant under rotation-about-center (the default transform-origin),
+          // so it's used only to locate the center; the true box size comes from
+          // offsetWidth/offsetHeight, and rotation is reproduced with a canvas
+          // translate+rotate around that center, matching the on-screen CSS transform.
           const r = el.getBoundingClientRect();
-          const boxX = (r.left - stageRect.left) * scaleFactor;
-          const boxY = (r.top - stageRect.top) * scaleFactor;
-          const boxW = r.width * scaleFactor;
-          const boxH = r.height * scaleFactor;
+          const centerX = (r.left + r.width / 2 - stageRect.left) * scaleFactor;
+          const centerY = (r.top + r.height / 2 - stageRect.top) * scaleFactor;
+          const boxW = el.offsetWidth * scaleFactor;
+          const boxH = el.offsetHeight * scaleFactor;
+          const boxX = -boxW / 2;
+          const boxY = -boxH / 2;
+          const rotationDeg = parseFloat(el.dataset.rotation) || 0;
+          ctx.save();
+          ctx.translate(centerX, centerY);
+          if(rotationDeg) ctx.rotate((rotationDeg * Math.PI) / 180);
           if(el.classList.contains('has-border') && boxW > 0 && boxH > 0){
             const silhouetteCanvas = document.createElement('canvas');
             silhouetteCanvas.width = Math.round(boxW);
@@ -4354,6 +4495,7 @@
             drawStickerBorder(silhouetteCanvas, boxX, boxY, boxW, boxH, 1 * scaleFactor);
           }
           ctx.drawImage(img, boxX, boxY, boxW, boxH);
+          ctx.restore();
         });
 
       // Speech bubbles are drawn manually (rounded body + tail + wrapped text)
