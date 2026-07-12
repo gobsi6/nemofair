@@ -183,9 +183,11 @@
 
   .color-settings{ position:relative; }
   .color-panel{
-    position:absolute;
-    top:calc(100% + 8px);
-    right:0;
+    /* Fixed (not absolute) so its position is computed against the actual
+       viewport via JS (see positionDropdownPanel) rather than anchored to
+       this small button — on narrow phones, anchoring a 270px-wide panel to
+       a button near the topbar's right edge pushed its left side off-screen. */
+    position:fixed;
     background:#fff;
     border:1px solid var(--line);
     border-radius:12px;
@@ -195,6 +197,7 @@
     flex-direction:column;
     gap:12px;
     width:270px;
+    max-width:calc(100vw - 24px);
     max-height:70vh;
     overflow-y:auto;
     z-index:60;
@@ -241,9 +244,10 @@
   /* ---------- Image size settings panel ---------- */
   .size-settings{ position:relative; }
   .size-panel{
-    position:absolute;
-    top:calc(100% + 8px);
-    right:0;
+    /* Same reasoning as .color-panel above: fixed + JS-computed position so
+       it always stays fully on-screen regardless of where its button ends up
+       after the toolbar wraps on narrow phones. */
+    position:fixed;
     background:#fff;
     border:1px solid var(--line);
     border-radius:12px;
@@ -253,6 +257,7 @@
     flex-direction:column;
     gap:14px;
     width:240px;
+    max-width:calc(100vw - 24px);
     z-index:60;
   }
   .size-panel label{
@@ -2879,15 +2884,41 @@
 
   // ---- Reset ----
   // ---- Image size settings: live-adjust slot sizes via CSS variables ----
+  // Shared by both the size and color panels: positions a fixed-position
+  // dropdown so it always sits just below its trigger button, right-aligned
+  // to it as before, but clamped so it never runs off either edge of the
+  // viewport — the old CSS-only (position:absolute; right:0) approach broke
+  // on narrow phones once the toolbar wrapped and pushed the button close to
+  // the right edge, since a wide fixed-width panel anchored there would spill
+  // off the left side of the screen.
+  function positionDropdownPanel(panel, btn){
+    const btnRect = btn.getBoundingClientRect();
+    const margin = 12;
+    const panelWidth = panel.getBoundingClientRect().width;
+    const desiredLeft = btnRect.right - panelWidth;
+    const maxLeft = Math.max(margin, window.innerWidth - panelWidth - margin);
+    const left = Math.min(Math.max(desiredLeft, margin), maxLeft);
+    panel.style.top = `${btnRect.bottom + 8}px`;
+    panel.style.left = `${left}px`;
+    panel.style.right = 'auto';
+  }
+
   const sizePanel = document.getElementById('sizePanel');
-  document.getElementById('sizeSettingsBtn').addEventListener('click', (e) => {
+  const sizeSettingsBtn = document.getElementById('sizeSettingsBtn');
+  sizeSettingsBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const opening = sizePanel.hidden;
     sizePanel.hidden = !sizePanel.hidden;
     // Both panels anchor to roughly the same top-right area, so leaving the other
     // one open at the same time made them visually overlap. Opening this one
     // always closes the other.
-    if(opening) colorPanel.hidden = true;
+    if(opening){
+      colorPanel.hidden = true;
+      positionDropdownPanel(sizePanel, sizeSettingsBtn);
+    }
+  });
+  window.addEventListener('resize', () => {
+    if(!sizePanel.hidden) positionDropdownPanel(sizePanel, sizeSettingsBtn);
   });
   document.addEventListener('click', (e) => {
     if(!sizePanel.hidden && !sizePanel.contains(e.target) && e.target.id !== 'sizeSettingsBtn'){
@@ -3657,11 +3688,18 @@
 
   // ---- Color adjustment panel: toggle open/closed, same pattern as the size panel ----
   const colorPanel = document.getElementById('colorPanel');
-  document.getElementById('colorSettingsBtn').addEventListener('click', (e) => {
+  const colorSettingsBtn = document.getElementById('colorSettingsBtn');
+  colorSettingsBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     const opening = colorPanel.hidden;
     colorPanel.hidden = !colorPanel.hidden;
-    if(opening) sizePanel.hidden = true;
+    if(opening){
+      sizePanel.hidden = true;
+      positionDropdownPanel(colorPanel, colorSettingsBtn);
+    }
+  });
+  window.addEventListener('resize', () => {
+    if(!colorPanel.hidden) positionDropdownPanel(colorPanel, colorSettingsBtn);
   });
   document.addEventListener('click', (e) => {
     if(!colorPanel.hidden && !colorPanel.contains(e.target) && e.target.id !== 'colorSettingsBtn'){
