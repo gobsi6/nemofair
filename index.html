@@ -1225,6 +1225,31 @@
   }
   .crop-reset-btn:hover{ border-color:var(--accent); color:var(--accent); }
 
+  /* On narrow phones the single-row control bar (zoom slider + 3 buttons) is
+     wider than the screen and ends up looking oversized/cramped — stack it
+     into two compact rows instead, sized to the viewport instead of a fixed
+     180px slider + full-padding buttons. */
+  @media (max-width: 480px){
+    .crop-overlay{ padding:16px; gap:12px; }
+    .crop-controls{
+      flex-direction:column;
+      align-items:stretch;
+      width:100%;
+      max-width:340px;
+      gap:10px;
+      padding:12px 14px;
+    }
+    .crop-controls .zoom-wrap{ width:100%; }
+    .crop-controls input[type=range]{ width:auto; flex:1 1 auto; }
+    .crop-controls .crop-btn-row{ width:100%; gap:8px; }
+    .crop-reset-btn, .crop-cancel-btn, .crop-apply-btn{
+      flex:1 1 0;
+      padding:9px 8px;
+      font-size:12.5px;
+      white-space:nowrap;
+    }
+  }
+
   /* ---------- Stickers (free-floating images) ---------- */
   .sticker{
     position:absolute;
@@ -2421,7 +2446,12 @@
     const boxH = slot.clientHeight;
     const ratio = boxW / boxH;
     const maxW = Math.min(560, window.innerWidth - 60);
-    const maxH = Math.min(560, window.innerHeight - 220);
+    // On narrow phones the control bar below wraps into two rows (zoom slider,
+    // then buttons), so it needs more reserved vertical space than the
+    // single-row desktop layout does — otherwise the stage would be sized as
+    // if the shorter bar were still there and the two could overlap.
+    const controlsReserve = window.innerWidth <= 480 ? 280 : 220;
+    const maxH = Math.min(560, window.innerHeight - controlsReserve);
     if(maxW / maxH > ratio){
       cropFrameH = maxH;
       cropFrameW = maxH * ratio;
