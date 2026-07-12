@@ -14,26 +14,6 @@
     font-weight: normal;
     font-display: swap;
   }
-  /* 배달의민족 주아체 (Juache) — alternative, not applied by default */
-  @font-face {
-    font-family: 'Juache';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
-    font-weight: normal;
-    font-display: swap;
-  }
-  /* 티머니 둥근바람체 (TMoneyDungunbaram) — alternative, not applied by default */
-  @font-face {
-    font-family: 'TMoneyDungunbaram';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/TmoneyRoundWindRegular.woff') format('woff');
-    font-weight: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: 'TMoneyDungunbaram';
-    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_20-07@1.0/TmoneyRoundWindExtraBold.woff') format('woff');
-    font-weight: 800;
-    font-display: swap;
-  }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
@@ -68,17 +48,51 @@
   .topbar{
     display:flex;
     align-items:center;
-    justify-content:space-between;
     flex-wrap:wrap;
+    gap:14px;
     row-gap:12px;
-    padding:16px 32px;
+    padding:16px 32px 16px 76px;
     border-bottom:1px solid var(--line);
     background:rgba(255,255,255,.9);
     backdrop-filter:blur(8px);
     position:sticky;
     top:0;
     z-index:50;
+    max-height:400px;
+    transition:max-height .25s ease, padding-top .2s ease, padding-bottom .2s ease, border-color .2s ease;
   }
+  /* Collapsed state is tracked on <body> rather than on #topbar itself, since
+     the toggle button now lives outside the topbar (fixed, always visible) so
+     it can still be reached even once the topbar has fully collapsed away. */
+  body.menu-collapsed .topbar{
+    max-height:0;
+    padding-top:0;
+    padding-bottom:0;
+    overflow:hidden;
+    border-bottom-width:0;
+  }
+  /* Fixed in the top-left corner, independent of the topbar's own layout, so
+     it stays put (and stays clickable) whether the topbar is expanded,
+     collapsed, or mid-animation. */
+  .topbar-toggle-btn{
+    position:fixed;
+    top:19px; left:32px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:28px; height:28px;
+    border-radius:7px;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--ink-soft);
+    cursor:pointer;
+    flex-shrink:0;
+    z-index:60;
+    transition:background .12s ease, color .12s ease;
+  }
+  .topbar-toggle-btn:hover{ background:var(--accent-soft); color:var(--accent); }
+  .topbar-toggle-btn svg{ display:block; transition:transform .2s ease; }
+  body.menu-collapsed .topbar-toggle-btn svg{ transform:rotate(-180deg); }
   .brand{
     display:flex;
     align-items:baseline;
@@ -111,7 +125,10 @@
     font-size:12.5px;
     color:var(--ink-soft);
   }
-  .actions{ display:flex; flex-wrap:wrap; gap:10px; row-gap:8px; align-items:center; justify-content:flex-end; }
+  .actions{
+    display:flex; flex-wrap:wrap; gap:10px; row-gap:8px; align-items:center; justify-content:flex-end;
+    margin-left:auto;
+  }
   button.primary{
     font-family:'Pretendard', sans-serif;
     font-weight:600;
@@ -125,6 +142,9 @@
     white-space:nowrap;
     box-shadow:0 2px 8px rgba(28,31,38,.18);
     transition:transform .12s ease, background .12s ease, box-shadow .12s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
   }
   button.primary:hover{ background:var(--accent); box-shadow:0 4px 12px rgba(92,137,160,.28); }
   button.primary:active{ transform:scale(0.97); }
@@ -140,9 +160,26 @@
     cursor:pointer;
     white-space:nowrap;
     transition:border-color .12s ease, color .12s ease;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
   }
   button.ghost:hover{ border-color:var(--accent); color:var(--accent); }
   button.ghost.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
+  .btn-icon{ flex-shrink:0; }
+
+  /* Below this width the actions row starts wrapping onto several lines, so
+     buttons switch to icon-only to keep the topbar compact — the label text
+     is still available as the native title tooltip. */
+  @media (max-width: 860px){
+    .toolbar-btn{
+      padding:10px;
+      gap:0;
+    }
+    .toolbar-btn .btn-label{
+      display:none;
+    }
+  }
 
   .color-settings{ position:relative; }
   .color-panel{
@@ -255,13 +292,11 @@
   /* ---------- Stage wrapper ---------- */
   .stage-wrap{
     padding:48px 20px 84px;
-    display:flex;
-    justify-content:center;
     overflow-x:auto;
   }
   #stage{
     width:calc(860px + 2 * var(--tall-w, 288px));
-    flex-shrink:0;
+    margin:0 auto;
     background-color:#FFFFFF;
     background-image:
       linear-gradient(to right, var(--frame-grid-color) 1px, transparent 1px),
@@ -667,12 +702,12 @@
   /* ---------- Slot caption (bottom-right credit/description text) ---------- */
   .img-slot .slot-caption{
     position:absolute;
-    right:8px; bottom:8px;
+    right:4px; bottom:8px;
     left:auto;
     z-index:4;
-    max-width:calc(100% - 16px);
+    max-width:calc(100% - 8px);
     margin:0;
-    padding:4px 9px;
+    padding:4px 10px;
     background:rgba(0,0,0,.55);
     border:none;
     border-radius:8px;
@@ -682,8 +717,8 @@
     font-weight:500;
     line-height:15px;
     text-align:right;
-    white-space:pre-wrap;
-    word-break:break-word;
+    white-space:nowrap;
+    overflow:hidden;
     cursor:text;
     opacity:0;
     pointer-events:none;
@@ -696,9 +731,9 @@
   }
   .img-slot.mini .slot-caption,
   .nl-cell .slot-caption{
-    right:5px; bottom:5px;
-    max-width:calc(100% - 10px);
-    padding:2px 6px;
+    right:3px; bottom:5px;
+    max-width:calc(100% - 6px);
+    padding:2px 7px;
     border-radius:6px;
     font-size:9px;
     line-height:12px;
@@ -1547,7 +1582,8 @@
 
   @media (max-width: 860px){
     .stage-wrap{ padding:24px 12px 60px; }
-    .topbar{ padding:14px 16px; gap:10px; }
+    .topbar{ padding:14px 16px 14px 56px; gap:10px; }
+    .topbar-toggle-btn{ left:16px; top:17px; }
   }
 
   /* ===================================================================
@@ -1580,6 +1616,7 @@
     grid-area:foot;
     justify-self:center;
     min-width:90px;
+    max-width:260px;
     margin:0;
     padding:5px 10px;
     border:1.5px solid #C4C4C4;
@@ -1588,6 +1625,8 @@
     font-size:11px;
     color:var(--ink-soft);
     text-align:center;
+    white-space:nowrap;
+    overflow:hidden;
     cursor:text;
   }
   .nl-foot-caption:empty::before{
@@ -1611,7 +1650,11 @@
     line-height:1; white-space:nowrap; flex:0 0 auto;
     position:relative; cursor:pointer;
   }
-  .nl-badge-text{ pointer-events:none; }
+  /* The Jalnan display font's own glyph metrics sit a little high inside its
+     line box, so centering the box alone (via the parent's flex align-items)
+     isn't quite enough — nudge the text down a couple pixels to make it look
+     truly centered in the badge. */
+  .nl-badge-text{ pointer-events:none; position:relative; top:1px; }
   .nl-badge-color{
     position:absolute; top:0; left:0; right:0; bottom:0;
     width:100%; height:100%;
@@ -1665,6 +1708,10 @@
     width:100%; box-sizing:border-box;
     padding:7px 10px; border-radius:10px;
   }
+  /* Same export-only nudge as .nl-sec-title above: asymmetric padding only
+     during the html2canvas capture, shifting the text up ~1px without moving
+     the pill itself, while the live editor keeps it visually centered. */
+  body.exporting .nl-animal-label{ padding:6px 10px 8px 10px; }
 
   .nl-info{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:20px; padding-top:2px; }
   .nl-body-b .nl-info{ text-align:right; }
@@ -1676,6 +1723,8 @@
     width:100%; flex:0 0 auto;
     text-align:center;
   }
+  /* Same export-only nudge as .nl-sec-title / .nl-animal-label above. */
+  body.exporting .nl-keywords{ padding:6px 15px 8px 15px; }
   .nl-section{
     display:flex; flex-direction:column; gap:7px;
     justify-content:center;
@@ -1693,6 +1742,11 @@
     border-radius:8px;
     letter-spacing:.02em;
   }
+  /* Only while html2canvas is actually capturing (body.exporting, toggled right
+     around the snapshot) does the padding go slightly asymmetric — nudging the
+     text up ~1px in the exported PNG without changing the box's total height,
+     while the live editor keeps the normal, visually-centered padding above. */
+  body.exporting .nl-sec-title{ padding:3px 14px 5px 14px; }
   .nl-sec-desc{ font-size:14px; color:var(--ink-text); line-height:1.55; text-align:center; }
 
   /* Middle (no header, so it sits in the body row and top-aligns with images) */
@@ -1703,6 +1757,98 @@
   .nl-theme-row{ display:flex; gap:10px; margin-top:0; }
   .nl-theme-row .swatch-box{ width:40px; height:40px; }
   .nl-theme-label{ font-size:13px; font-weight:600; color:var(--ink-soft); letter-spacing:.02em; }
+
+  /* ---------- Custom color picker (touch-friendly replacement for the native
+     input[type=color] dialog on phones/tablets — desktop mouse users keep the
+     native picker, since it already works fine with a precise pointer) ---------- */
+  .ccp-overlay{
+    position:fixed; inset:0;
+    background:rgba(28,31,38,.55);
+    display:flex; align-items:center; justify-content:center;
+    z-index:200000;
+    padding:20px;
+  }
+  .ccp-overlay[hidden]{ display:none; }
+  body.exporting .ccp-overlay{ display:none !important; }
+  .ccp-panel{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    width:100%;
+    max-width:300px;
+    box-shadow:0 20px 50px rgba(28,31,38,.3);
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  .ccp-title{
+    font-size:13px; font-weight:700; color:var(--ink-soft);
+    text-align:center;
+  }
+  .ccp-canvas-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio:1 / 1;
+    border-radius:12px;
+    overflow:hidden;
+    touch-action:none;
+    border:1px solid var(--line);
+  }
+  .ccp-canvas-wrap canvas{ width:100%; height:100%; display:block; }
+  .ccp-square-thumb{
+    position:absolute;
+    top:0; left:0;
+    width:22px; height:22px;
+    border-radius:50%;
+    border:3px solid #fff;
+    box-shadow:0 0 0 1.5px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.3);
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+  }
+  .ccp-hue-wrap{
+    position:relative;
+    width:100%; height:30px;
+    border-radius:15px;
+    overflow:hidden;
+    touch-action:none;
+    border:1px solid var(--line);
+  }
+  .ccp-hue-wrap canvas{ width:100%; height:100%; display:block; }
+  .ccp-hue-thumb{
+    position:absolute;
+    top:50%; left:0;
+    width:26px; height:26px;
+    border-radius:50%;
+    border:3px solid #fff;
+    box-shadow:0 0 0 1.5px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.3);
+    transform:translate(-50%,-50%);
+    pointer-events:none;
+    background:transparent;
+  }
+  .ccp-bottom-row{ display:flex; align-items:center; gap:10px; }
+  .ccp-preview{
+    width:42px; height:42px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    flex:0 0 auto;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.5);
+  }
+  .ccp-hex-input{
+    flex:1 1 auto;
+    min-width:0;
+    font-family:'Pretendard', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    padding:10px 12px;
+    border-radius:10px;
+    border:1px solid var(--line);
+    color:var(--ink-text);
+  }
+  .ccp-hex-input:focus{ outline:none; border-color:var(--accent); }
+  .ccp-actions{ display:flex; gap:10px; }
+  .ccp-actions button{ flex:1 1 0; justify-content:center; }
 </style>
 </head>
 <body>
@@ -1720,21 +1866,24 @@
   </defs>
 </svg>
 
-<div class="topbar">
+<button type="button" class="topbar-toggle-btn" id="menuToggleBtn" title="메뉴 접기" aria-expanded="true" aria-controls="topbar">
+  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+</button>
+<div class="topbar" id="topbar">
   <div class="brand">
     <div class="mark">네모네모 페어틀</div>
-    <span class="version-badge">ver1.3</span>
+    <span class="version-badge">ver1.35</span>
   </div>
-  <div class="actions">
-    <button class="ghost" id="saveBtn">저장</button>
-    <button class="ghost" id="loadBtn">불러오기</button>
+  <div class="actions" id="topbarActions">
+    <button class="ghost toolbar-btn" id="saveBtn" title="저장"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg><span class="btn-label">저장</span></button>
+    <button class="ghost toolbar-btn" id="loadBtn" title="불러오기"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/></svg><span class="btn-label">불러오기</span></button>
     <input type="file" id="loadInput" accept="application/json,.json" style="display:none;">
-    <button class="ghost" id="addStickerBtn">스티커 추가</button>
+    <button class="ghost toolbar-btn" id="addStickerBtn" title="스티커 추가"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/></svg><span class="btn-label">스티커 추가</span></button>
     <input type="file" id="stickerInput" accept="image/*" style="display:none;">
-    <button class="ghost" id="addBubbleBtn">말풍선 추가</button>
-    <button class="ghost" id="rulerToggleBtn">정렬자</button>
+    <button class="ghost toolbar-btn" id="addBubbleBtn" title="말풍선 추가"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg><span class="btn-label">말풍선 추가</span></button>
+    <button class="ghost toolbar-btn" id="rulerToggleBtn" title="정렬자"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.4 2.4 0 0 1 0-3.4l2.6-2.6a2.4 2.4 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/></svg><span class="btn-label">정렬자</span></button>
     <div class="size-settings">
-      <button class="ghost" id="sizeSettingsBtn">이미지 크기</button>
+      <button class="ghost toolbar-btn" id="sizeSettingsBtn" title="이미지 크기"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg><span class="btn-label">이미지 크기</span></button>
       <div class="size-panel" id="sizePanel" hidden>
         <label>
           <span>메인 이미지 크기</span>
@@ -1755,7 +1904,7 @@
       </div>
     </div>
     <div class="color-settings">
-      <button class="ghost" id="colorSettingsBtn">색상 조정</button>
+      <button class="ghost toolbar-btn" id="colorSettingsBtn" title="색상 조정"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg><span class="btn-label">색상 조정</span></button>
       <div class="color-panel" id="colorPanel" hidden>
         <div class="color-panel-row">
           <label class="color-panel-swatch" id="frameColorSwatch">
@@ -1823,8 +1972,8 @@
         <button class="ghost size-reset-btn" id="colorResetBtn">색상 초기화</button>
       </div>
     </div>
-    <button class="ghost" id="resetBtn">전체 초기화</button>
-    <button class="primary" id="downloadBtn">PNG로 다운로드</button>
+    <button class="ghost toolbar-btn" id="resetBtn" title="전체 초기화"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg><span class="btn-label">전체 초기화</span></button>
+    <button class="primary toolbar-btn" id="downloadBtn" title="PNG로 다운로드"><svg class="btn-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg><span class="btn-label">PNG로 다운로드</span></button>
   </div>
 </div>
 
@@ -2065,6 +2214,31 @@
       <button type="button" class="crop-reset-btn" id="cropResetBtn">초기화</button>
       <button type="button" class="crop-cancel-btn" id="cropCancelBtn">취소</button>
       <button type="button" class="crop-apply-btn" id="cropApplyBtn">적용</button>
+    </div>
+  </div>
+</div>
+
+<!-- Touch-friendly color picker: on phones/tablets this replaces the native
+     input[type=color] dialog, which tends to be cramped or inconsistent
+     across mobile browsers. Desktop mouse users still get the native one. -->
+<div class="ccp-overlay" id="ccpOverlay" hidden>
+  <div class="ccp-panel">
+    <div class="ccp-title">색상 선택</div>
+    <div class="ccp-canvas-wrap" id="ccpSquareWrap">
+      <canvas id="ccpSquare" width="260" height="260"></canvas>
+      <div class="ccp-square-thumb" id="ccpSquareThumb"></div>
+    </div>
+    <div class="ccp-hue-wrap" id="ccpHueWrap">
+      <canvas id="ccpHue" width="260" height="30"></canvas>
+      <div class="ccp-hue-thumb" id="ccpHueThumb"></div>
+    </div>
+    <div class="ccp-bottom-row">
+      <div class="ccp-preview" id="ccpPreview"></div>
+      <input type="text" class="ccp-hex-input" id="ccpHexInput" maxlength="7" placeholder="#RRGGBB" autocapitalize="characters" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="ccp-actions">
+      <button type="button" class="ghost" id="ccpCancelBtn">취소</button>
+      <button type="button" class="primary" id="ccpApplyBtn">완료</button>
     </div>
   </div>
 </div>
@@ -2603,6 +2777,13 @@
   // of the default text), then leave later clicks alone so the caret lands where
   // the user clicks. ----
   function wireEditableBehavior(el){
+    // The 특징/의상 description boxes and speech bubble text are meant to hold
+    // multiple lines (description boxes ship with default <br> line breaks
+    // already; bubbles are dialogue and often span several lines). Every other
+    // editable field (name, hashtag, stats, keywords, caption) is a single-line
+    // field laid out tightly in the card, so Enter there still just confirms/
+    // blurs instead of wrapping the layout with an unexpected line break.
+    const allowsLineBreak = el.classList.contains('nl-sec-desc') || el.classList.contains('bubble-text');
     el.addEventListener('focus', function selectAllOnFirstFocus(){
       const range = document.createRange();
       range.selectNodeContents(el);
@@ -2613,7 +2794,7 @@
     el.addEventListener('keydown', (e) => {
       if(e.key === 'Enter'){
         e.preventDefault();
-        if(e.altKey){
+        if(allowsLineBreak){
           document.execCommand('insertLineBreak');
           // execCommand sometimes leaves the selection anchored at its old spot
           // instead of moving with the newly-inserted line break — force it to
@@ -3648,6 +3829,18 @@
     return { type: 'character-card-maker-save', savedAt: new Date().toISOString(), editables, swatches, swatchModes, swatchShapes, badgeColors, images, imageCrops, stickers, bubbles, sizes, slotColors, pointLists };
   }
 
+  // ---- Top menu collapse toggle (default: expanded) ----
+  const menuToggleBtn = document.getElementById('menuToggleBtn');
+  menuToggleBtn.addEventListener('click', () => {
+    const collapsed = document.body.classList.toggle('menu-collapsed');
+    menuToggleBtn.setAttribute('aria-expanded', String(!collapsed));
+    menuToggleBtn.title = collapsed ? '메뉴 펼치기' : '메뉴 접기';
+    if(collapsed){
+      sizePanel.hidden = true;
+      colorPanel.hidden = true;
+    }
+  });
+
   // ---- Derive a safe filename from the 페어명 (pair name) title text ----
   function getTitleFilename(){
     const titleEl = document.querySelector('.nl-pair-name');
@@ -3660,8 +3853,9 @@
   document.getElementById('saveBtn').addEventListener('click', async () => {
     const saveBtn = document.getElementById('saveBtn');
     if(saveBtn.disabled) return;
-    const originalLabel = saveBtn.textContent;
-    saveBtn.textContent = '저장 중...';
+    const saveLabelEl = saveBtn.querySelector('.btn-label');
+    const originalLabel = saveLabelEl.textContent;
+    saveLabelEl.textContent = '저장 중...';
     saveBtn.disabled = true;
     try{
       // Yield a frame first so the button repaints with its "saving" label before
@@ -3682,7 +3876,7 @@
       alert('저장 중 문제가 발생했습니다. 다시 시도해주세요.');
       console.error(err);
     }finally{
-      saveBtn.textContent = originalLabel;
+      saveLabelEl.textContent = originalLabel;
       saveBtn.disabled = false;
     }
   });
@@ -3832,8 +4026,9 @@
     const file = input.files[0];
     if(!file) return;
     const loadBtn = document.getElementById('loadBtn');
-    const originalLabel = loadBtn.textContent;
-    loadBtn.textContent = '불러오는 중...';
+    const loadLabelEl = loadBtn.querySelector('.btn-label');
+    const originalLabel = loadLabelEl.textContent;
+    loadLabelEl.textContent = '불러오는 중...';
     loadBtn.disabled = true;
     const reader = new FileReader();
     reader.onload = (ev) => {
@@ -3848,7 +4043,7 @@
           console.error(err);
         }finally{
           input.value = '';
-          loadBtn.textContent = originalLabel;
+          loadLabelEl.textContent = originalLabel;
           loadBtn.disabled = false;
         }
       });
@@ -3856,7 +4051,7 @@
     reader.onerror = () => {
       alert('파일을 읽는 중 문제가 발생했습니다. 다시 시도해주세요.');
       input.value = '';
-      loadBtn.textContent = originalLabel;
+      loadLabelEl.textContent = originalLabel;
       loadBtn.disabled = false;
     };
     reader.readAsText(file);
@@ -3865,8 +4060,9 @@
   // ---- Download as PNG ----
   document.getElementById('downloadBtn').addEventListener('click', async () => {
     const btn = document.getElementById('downloadBtn');
-    const original = btn.textContent;
-    btn.textContent = '이미지 생성 중...';
+    const labelEl = btn.querySelector('.btn-label');
+    const original = labelEl.textContent;
+    labelEl.textContent = '이미지 생성 중...';
     btn.disabled = true;
 
     document.body.classList.add('exporting');
@@ -4150,6 +4346,46 @@
         }
       }
 
+      // 캐릭터A/B 배지: 라이브 화면에서는 CSS로 중앙 정렬해뒀지만, html2canvas는
+      // 이 커스텀 폰트(Jalnan)의 줄 높이를 실제 브라우저와 다르게 계산해서 내보낸
+      // 이미지에서 글자가 위/아래로 치우쳐 보이곤 했다 — 그 오차가 브라우저·OS의
+      // 폰트 로딩/렌더링 방식에 따라 달라져 "환경마다 다르게 보이는" 원인이었다.
+      // 배지 배경과 글자를 캔버스에 직접 다시 그리면 html2canvas의 텍스트 렌더링을
+      // 완전히 우회하므로, 내보낸 이미지의 글자 위치가 어떤 환경에서도 항상 박스
+      // 정중앙에 고정된다.
+      document.querySelectorAll('.nl-badge').forEach(badgeEl => {
+        const br = badgeEl.getBoundingClientRect();
+        if(br.width <= 0 || br.height <= 0) return;
+        const textEl = badgeEl.querySelector('.nl-badge-text');
+        if(!textEl) return;
+        const cs = getComputedStyle(badgeEl);
+        const tcs = getComputedStyle(textEl);
+        const dx = (br.left - stageRect.left) * scaleFactor;
+        const dy = (br.top - stageRect.top) * scaleFactor;
+        const dw = br.width * scaleFactor;
+        const dh = br.height * scaleFactor;
+        const radius = Math.min(parseFloat(cs.borderRadius) * scaleFactor, dw / 2, dh / 2);
+        const fontSize = parseFloat(tcs.fontSize) * scaleFactor;
+
+        ctx.save();
+        // Fully opaque fill covers html2canvas's own box+text underneath —
+        // no separate erase pass needed, unlike the pair-header text above.
+        drawRoundedRectPath(ctx, dx, dy, dw, dh, radius);
+        ctx.fillStyle = cs.backgroundColor || '#1C1F26';
+        ctx.fill();
+
+        ctx.fillStyle = tcs.color || '#FFFFFF';
+        ctx.font = `${tcs.fontWeight || 'normal'} ${fontSize}px ${tcs.fontFamily}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        // Canvas's own 'middle' baseline centers on (ascent+descent)/2, which for
+        // this display font sits visually a couple pixels above true center —
+        // nudge down to compensate, same idea as the on-screen CSS fix.
+        const badgeNudgeDown = 2 * scaleFactor;
+        ctx.fillText(textEl.textContent || '', dx + dw / 2, dy + dh / 2 + badgeNudgeDown);
+        ctx.restore();
+      });
+
       // Redraw every uploaded photo directly from its original decoded bitmap, in one
       // clean pass straight onto the final canvas. html2canvas's own copy has already
       // been resampled twice (once compositing the CSS background, once in our own
@@ -4265,9 +4501,7 @@
         if(r.width === 0 || r.height === 0) return;
         const cs = getComputedStyle(cap);
 
-        const dx = (r.left - stageRect.left) * scaleFactor;
         const dy = (r.top - stageRect.top) * scaleFactor;
-        const dw = r.width * scaleFactor;
         const dh = r.height * scaleFactor;
 
         const radius = parseFloat(cs.borderRadius) * scaleFactor;
@@ -4277,6 +4511,33 @@
         const fontWeight = cs.fontWeight || '500';
         const fontFamily = cs.fontFamily || 'Pretendard, sans-serif';
         const borderWidth = (parseFloat(cs.borderTopWidth) || 0) * scaleFactor;
+
+        // The pill is a shrink-to-fit box in the live CSS (it hugs however wide
+        // the text renders there), so its captured r.width is only ever as
+        // trustworthy as whatever font metrics the live page happened to be
+        // using at that instant — which is exactly what could drift on some
+        // devices/timing. Rather than trust that captured width, recompute the
+        // pill's width here from the canvas's own text measurement, so the
+        // background and the text it contains are always mutually consistent
+        // by construction — there's no longer two separate measurements that
+        // could disagree with each other.
+        ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
+        let text = (cap.innerText || cap.textContent || '').replace(/\n/g, ' ').trim();
+        const textAlign = cs.textAlign === 'center' ? 'center' : (cs.textAlign === 'left' ? 'left' : 'right');
+        // Cap against the parent slot's own (layout-determined, content-independent)
+        // width rather than the caption's own rendered width — using the caption's
+        // width here would risk re-capping back down to whatever narrower figure
+        // caused the mismatch in the first place.
+        const slotEl = cap.closest('.img-slot') || cap.parentElement;
+        const slotWidth = (slotEl ? slotEl.getBoundingClientRect().width : r.width) * scaleFactor;
+        const dw = Math.min(ctx.measureText(text).width + padL + padR, slotWidth - 8 * scaleFactor);
+        // Anchor at whichever edge/point stays put regardless of width: the
+        // right edge for right/left-aligned captions (CSS right:Npx pins that
+        // edge), or the horizontal center for the centered bottom pill (CSS
+        // justify-self:center keeps the middle fixed no matter the width).
+        const dx = textAlign === 'center'
+          ? (r.left + r.width / 2 - stageRect.left) * scaleFactor - dw / 2
+          : (r.right - stageRect.left) * scaleFactor - dw;
 
         // Rounded-rect pill background.
         ctx.save();
@@ -4311,48 +4572,21 @@
           ctx.stroke();
         }
 
-        // Text, vertically centered and wrapped to the same width. Alignment
-        // follows the element's own CSS text-align — most slot captions are
-        // right-aligned, but the bottom-center commission-source pill is centered.
-        const textAlign = cs.textAlign === 'center' ? 'center' : (cs.textAlign === 'left' ? 'left' : 'right');
+        // Text, vertically and horizontally centered within the pill we just
+        // drew — since the pill's own width came from this same measureText
+        // call, the text is guaranteed to fit (module the 1.4x safety cap
+        // above, for pathologically long text where clipping is preferable to
+        // an enormous pill).
         ctx.fillStyle = cs.color || '#fff';
-        ctx.font = `${fontWeight} ${fontSize}px ${fontFamily}`;
-        ctx.textAlign = textAlign;
+        ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        const lineHeight = parseFloat(cs.lineHeight) * scaleFactor || fontSize * 1.35;
         const innerW = dw - padL - padR;
-        const rawLines = (cap.innerText || cap.textContent || '').split('\n');
-        const lines = [];
-        rawLines.forEach(raw => {
-          if(raw === ''){ lines.push(''); return; }
-          // Word-first wrap (mirrors CSS word-break:break-word) — see the matching
-          // fix/comment in the speech-bubble export block for the reasoning.
-          const words = raw.split(' ');
-          let cur = '';
-          words.forEach(word => {
-            const test = cur === '' ? word : cur + ' ' + word;
-            if(ctx.measureText(test).width > innerW && cur !== ''){
-              lines.push(cur);
-              cur = word;
-            }else{
-              cur = test;
-            }
-            while(ctx.measureText(cur).width > innerW && cur.length > 1){
-              let i = cur.length - 1;
-              while(i > 1 && ctx.measureText(cur.slice(0, i)).width > innerW) i--;
-              lines.push(cur.slice(0, i));
-              cur = cur.slice(i);
-            }
-          });
-          lines.push(cur);
-        });
-        const totalTextH = lineHeight * lines.length;
-        let ty = dy + dh / 2 - totalTextH / 2 + lineHeight / 2;
-        const tx = textAlign === 'center' ? dx + dw / 2 : (textAlign === 'left' ? dx + padL : dx + dw - padR);
-        lines.forEach(line => {
-          ctx.fillText(line, tx, ty);
-          ty += lineHeight;
-        });
+        if(ctx.measureText(text).width > innerW){
+          let i = text.length;
+          while(i > 0 && ctx.measureText(text.slice(0, i)).width > innerW) i--;
+          text = text.slice(0, i);
+        }
+        ctx.fillText(text, dx + dw / 2, dy + dh / 2);
         ctx.restore();
       });
 
@@ -4671,7 +4905,7 @@
       console.error(err);
     }finally{
       document.body.classList.remove('exporting');
-      btn.textContent = original;
+      labelEl.textContent = original;
       btn.disabled = false;
     }
   });
@@ -4707,6 +4941,227 @@
   // of the three above cover — capture pointerup too so a moved/resized element's
   // new position or size is snapshotted once the gesture ends.
   document.addEventListener('pointerup', scheduleAutosave, true);
+
+  // ---- Custom touch-friendly color picker ----
+  // Native input[type=color] dialogs are small, inconsistent, and fiddly to
+  // use with a finger across mobile browsers. On touch devices we intercept
+  // the click before the native dialog opens and show this larger
+  // hue-slider + saturation/brightness square picker instead. Desktop mouse
+  // users are untouched — the browser's native picker still opens for them,
+  // since it already works fine with a precise pointer.
+  (function setupCustomColorPicker(){
+    const overlay = document.getElementById('ccpOverlay');
+    if(!overlay) return;
+
+    const isTouchDevice = () => window.matchMedia('(pointer: coarse)').matches;
+
+    const squareCanvas = document.getElementById('ccpSquare');
+    const squareThumb = document.getElementById('ccpSquareThumb');
+    const squareWrap = document.getElementById('ccpSquareWrap');
+    const hueCanvas = document.getElementById('ccpHue');
+    const hueThumb = document.getElementById('ccpHueThumb');
+    const hueWrap = document.getElementById('ccpHueWrap');
+    const preview = document.getElementById('ccpPreview');
+    const hexInput = document.getElementById('ccpHexInput');
+    const cancelBtn = document.getElementById('ccpCancelBtn');
+    const applyBtn = document.getElementById('ccpApplyBtn');
+
+    const sqCtx = squareCanvas.getContext('2d');
+    const hueCtx = hueCanvas.getContext('2d');
+
+    let hue = 0, sat = 0, val = 0; // hue: 0-360, sat/val: 0-1
+    let activeInput = null;
+    let draggingSquare = false;
+    let draggingHue = false;
+
+    function hsvToHex(h, s, v){
+      const c = v * s;
+      const x = c * (1 - Math.abs(((h / 60) % 2) - 1));
+      const m = v - c;
+      let r = 0, g = 0, b = 0;
+      if(h < 60){ r = c; g = x; b = 0; }
+      else if(h < 120){ r = x; g = c; b = 0; }
+      else if(h < 180){ r = 0; g = c; b = x; }
+      else if(h < 240){ r = 0; g = x; b = c; }
+      else if(h < 300){ r = x; g = 0; b = c; }
+      else { r = c; g = 0; b = x; }
+      const toHex = n => Math.round((n + m) * 255).toString(16).padStart(2, '0');
+      return `#${toHex(r)}${toHex(g)}${toHex(b)}`.toUpperCase();
+    }
+
+    function hexToHsv(hex){
+      hex = (hex || '#000000').replace('#', '');
+      if(hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+      if(hex.length !== 6) hex = '000000';
+      const r = parseInt(hex.substring(0, 2), 16) / 255;
+      const g = parseInt(hex.substring(2, 4), 16) / 255;
+      const b = parseInt(hex.substring(4, 6), 16) / 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      const d = max - min;
+      let h = 0;
+      if(d !== 0){
+        if(max === r) h = 60 * (((g - b) / d) % 6);
+        else if(max === g) h = 60 * ((b - r) / d + 2);
+        else h = 60 * ((r - g) / d + 4);
+      }
+      if(h < 0) h += 360;
+      const s = max === 0 ? 0 : d / max;
+      return { h, s, v: max };
+    }
+
+    function drawHueBar(){
+      const w = hueCanvas.width, h = hueCanvas.height;
+      const grad = hueCtx.createLinearGradient(0, 0, w, 0);
+      for(let i = 0; i <= 6; i++){
+        grad.addColorStop(i / 6, `hsl(${i * 60}, 100%, 50%)`);
+      }
+      hueCtx.fillStyle = grad;
+      hueCtx.fillRect(0, 0, w, h);
+    }
+
+    function drawSquare(){
+      const w = squareCanvas.width, h = squareCanvas.height;
+      sqCtx.fillStyle = hsvToHex(hue, 1, 1);
+      sqCtx.fillRect(0, 0, w, h);
+      const whiteGrad = sqCtx.createLinearGradient(0, 0, w, 0);
+      whiteGrad.addColorStop(0, 'rgba(255,255,255,1)');
+      whiteGrad.addColorStop(1, 'rgba(255,255,255,0)');
+      sqCtx.fillStyle = whiteGrad;
+      sqCtx.fillRect(0, 0, w, h);
+      const blackGrad = sqCtx.createLinearGradient(0, 0, 0, h);
+      blackGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      blackGrad.addColorStop(1, 'rgba(0,0,0,1)');
+      sqCtx.fillStyle = blackGrad;
+      sqCtx.fillRect(0, 0, w, h);
+    }
+
+    function updateThumbs(){
+      const sqRect = squareWrap.getBoundingClientRect();
+      squareThumb.style.left = `${sat * sqRect.width}px`;
+      squareThumb.style.top = `${(1 - val) * sqRect.height}px`;
+      const hueRect = hueWrap.getBoundingClientRect();
+      hueThumb.style.left = `${(hue / 360) * hueRect.width}px`;
+    }
+
+    function updatePreview(){
+      const hex = hsvToHex(hue, sat, val);
+      preview.style.background = hex;
+      hexInput.value = hex;
+    }
+
+    function refreshAll(){
+      drawHueBar();
+      drawSquare();
+      updateThumbs();
+      updatePreview();
+    }
+
+    function pointFromEvent(e, rect){
+      return {
+        x: Math.min(Math.max(e.clientX - rect.left, 0), rect.width),
+        y: Math.min(Math.max(e.clientY - rect.top, 0), rect.height)
+      };
+    }
+
+    function handleSquarePointer(e){
+      const rect = squareWrap.getBoundingClientRect();
+      const p = pointFromEvent(e, rect);
+      sat = rect.width === 0 ? 0 : p.x / rect.width;
+      val = rect.height === 0 ? 0 : 1 - (p.y / rect.height);
+      updateThumbs();
+      updatePreview();
+    }
+
+    function handleHuePointer(e){
+      const rect = hueWrap.getBoundingClientRect();
+      const p = pointFromEvent(e, rect);
+      hue = rect.width === 0 ? 0 : (p.x / rect.width) * 360;
+      drawSquare();
+      updateThumbs();
+      updatePreview();
+    }
+
+    squareWrap.addEventListener('pointerdown', (e) => {
+      draggingSquare = true;
+      squareWrap.setPointerCapture(e.pointerId);
+      handleSquarePointer(e);
+    });
+    squareWrap.addEventListener('pointermove', (e) => { if(draggingSquare) handleSquarePointer(e); });
+    squareWrap.addEventListener('pointerup', () => { draggingSquare = false; });
+    squareWrap.addEventListener('pointercancel', () => { draggingSquare = false; });
+
+    hueWrap.addEventListener('pointerdown', (e) => {
+      draggingHue = true;
+      hueWrap.setPointerCapture(e.pointerId);
+      handleHuePointer(e);
+    });
+    hueWrap.addEventListener('pointermove', (e) => { if(draggingHue) handleHuePointer(e); });
+    hueWrap.addEventListener('pointerup', () => { draggingHue = false; });
+    hueWrap.addEventListener('pointercancel', () => { draggingHue = false; });
+
+    hexInput.addEventListener('input', () => {
+      let raw = hexInput.value.trim();
+      if(!raw.startsWith('#')) raw = `#${raw}`;
+      if(/^#[0-9a-fA-F]{6}$/.test(raw)){
+        const hsv = hexToHsv(raw);
+        hue = hsv.h; sat = hsv.s; val = hsv.v;
+        drawSquare();
+        updateThumbs();
+        preview.style.background = raw.toUpperCase();
+      }
+    });
+    hexInput.addEventListener('keydown', (e) => {
+      if(e.key === 'Enter') applyBtn.click();
+    });
+
+    function closeOverlay(){
+      overlay.hidden = true;
+      activeInput = null;
+    }
+
+    cancelBtn.addEventListener('click', closeOverlay);
+
+    applyBtn.addEventListener('click', () => {
+      if(activeInput){
+        const hex = hsvToHex(hue, sat, val);
+        activeInput.value = hex;
+        // Every existing swatch listens for 'input', which is also what
+        // drives the autosave hook — so this one dispatch is all it takes
+        // to fully apply the picked color exactly as the native dialog would.
+        activeInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+      closeOverlay();
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if(e.target === overlay) closeOverlay();
+    });
+
+    function openPicker(input){
+      activeInput = input;
+      const hsv = hexToHsv(input.value || '#000000');
+      hue = hsv.h; sat = hsv.s; val = hsv.v;
+      overlay.hidden = false;
+      // Rects can't be measured accurately until the overlay has actually
+      // painted, so wait one frame before placing the thumbs.
+      requestAnimationFrame(refreshAll);
+    }
+
+    // Capture the click before it reaches the input's default action (which
+    // is what opens the native dialog) — preventDefault() here stops that
+    // dialog from appearing at all, on every browser that matters.
+    document.addEventListener('click', (e) => {
+      const input = e.target.closest('input[type=color]');
+      if(!input || !isTouchDevice()) return;
+      e.preventDefault();
+      input.blur();
+      openPicker(input);
+    }, true);
+
+    window.addEventListener('resize', () => {
+      if(!overlay.hidden) updateThumbs();
+    });
+  })();
 
   // Offer to restore once, right after the page finishes loading.
   (function offerAutosaveRestore(){
