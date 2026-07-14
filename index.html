@@ -5289,6 +5289,15 @@
     });
   })();
 
+  // Escape closes whichever full-screen overlay is currently open — neither
+  // the crop editor nor the touch color picker had a keyboard dismiss path.
+  document.addEventListener('keydown', (e) => {
+    if(e.key !== 'Escape') return;
+    if(!cropOverlay.hidden){ closeCropEditor(); return; }
+    const ccpOverlay = document.getElementById('ccpOverlay');
+    if(ccpOverlay && !ccpOverlay.hidden) ccpOverlay.hidden = true;
+  });
+
   // Offer to restore once, right after the page finishes loading.
   (function offerAutosaveRestore(){
     let raw;
